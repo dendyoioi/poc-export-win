@@ -459,10 +459,29 @@
       ];
     }
 
+    async function checkHelperHealth() {
+      try {
+        const res = await fetch('http://127.0.0.1:48123/v1/health', { method: 'GET' });
+        if (res.ok) {
+          isHelperConnected = true;
+          document.getElementById('helperStatusToggle').value = 'connected';
+          toggleHelperConnection();
+          return true;
+        }
+      } catch (err) {
+        // Helper offline
+      }
+      isHelperConnected = false;
+      document.getElementById('helperStatusToggle').value = 'offline';
+      toggleHelperConnection();
+      return false;
+    }
+
     async function handleExportar() {
       if (!validatePeriodo()) return;
 
-      if (!isHelperConnected) {
+      const connected = await checkHelperHealth();
+      if (!connected && !isHelperConnected) {
         document.getElementById('modalOffline').classList.remove('hidden');
         return;
       }
@@ -474,29 +493,27 @@
       log(`Sending HTTP POST to http://127.0.0.1:48123/v1/export ...`);
       log(`Payload -> Target Directory: "${targetPath}" | File Count: ${files.length}`);
 
-      // In production with Tauri installed:
-      // Tauri Rust engine executes std::fs::write for all 4 raw CSV files directly into targetPath (NO ZIP!)
-      setTimeout(async () => {
-        log('Tauri Process Response (200 OK): Direct FS Write executed!');
-        files.forEach(f => log(`  [DISK WRITE SUCCESS] -> ${targetPath}/${f.filename}`));
-
-        // For Web PoC Verification: Trigger direct download of the 4 raw CSV files sequentially
-        log('Generating 4 raw CSV files (IVREGESP.csv, IVOTRDGI.csv, MOVIVAC.csv, IVDETPER.csv)...');
-        files.forEach((file, index) => {
-          setTimeout(() => {
-            const blob = new Blob([file.content], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = file.filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            log(`  [FILE DOWNLOADED] -> ${file.filename}`);
-          }, index * 300);
+      try {
+        const response = await fetch('http://127.0.0.1:48123/v1/export', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ targetPath, files })
         });
 
-        alert(`✅ EXPORT SUCCESSFUL VIA TAURI / ELECTRON HELPER!\n\nTarget Directory: ${targetPath}\n\nDalam aplikasi Tauri produksi: 4 file CSV ini (IVREGESP.csv, IVOTRDGI.csv, MOVIVAC.csv, IVDETPER.csv) ditulis LANGSUING tanpa berbentuk ZIP.\nDalam simulasi ini: 4 file CSV asli sedang di-download ke komputer Anda!`);
-      }, 400);
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          log(`✅ HELPER SUCCESS (200 OK): ${result.message}`);
+          result.writtenFiles.forEach(fp => log(`  [DISK WRITE SUCCESS] -> ${fp}`));
+
+          alert(`🎉 EKSPOR BERHASIL TERULIS LANGSUING KE DISK MAC!\n\nTarget Folder: ${targetPath}\n\nSemua 4 file CSV (IVREGESP.csv, IVOTRDGI.csv, MOVIVAC.csv, IVDETPER.csv) telah ditulis fisik secara langsung ke dalam folder tujuan di Mac Anda tanpa melalui folder Downloads!`);
+        } else {
+          throw new Error(result.error || 'Server error');
+        }
+      } catch (err) {
+        log(`Helper export failed: ${err.message}`, 'error');
+        alert(`❌ Helper Error: ${err.message}`);
+      }
     }
 
     function closeOfflineModal() { document.getElementById('modalOffline').classList.add('hidden'); }
