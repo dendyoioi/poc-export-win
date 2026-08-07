@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulación Exportar a Holistor Win - Solución 2 (OS-Aware & Save-As)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- JSZip CDN for ZIP bundling fallback -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <!-- Font Inter -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .bg-teal-header { background-color: #5BA4A4; }
+    .btn-green { background-color: #2CC85A; }
+    .btn-green:hover { background-color: #25B34F; }
+    .btn-teal { background-color: #008080; }
+    .btn-teal:hover { background-color: #006666; }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen text-gray-800">
+
+  <!-- Top Header Mockup (Sprint 13 UI) -->
+  <header class="bg-teal-header text-white px-6 py-3 flex flex-wrap items-center justify-between shadow-sm">
+    <div class="flex items-center space-x-6">
+      <div class="flex items-center space-x-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <span class="font-bold text-lg tracking-wide">Contabilidad</span>
+      </div>
+      <div class="text-sm font-medium flex items-center space-x-4">
+        <span>Empresa: <strong class="underline">Mavi - Mavi S.A.</strong></span>
+        <span>Período: <strong>05/2025</strong></span>
+      </div>
+    </div>
+    <div class="flex items-center space-x-4">
+      <div class="bg-teal-700/40 text-xs px-3 py-1.5 rounded-full font-semibold border border-teal-200/30">
+        Comprobantes: 18 / 1000
+      </div>
+      <div class="flex items-center space-x-2 text-sm bg-teal-800/30 px-3 py-1 rounded-full">
+        <div class="w-6 h-6 rounded-full bg-teal-200 text-teal-900 flex items-center justify-center font-bold text-xs">D</div>
+        <span>dendyoioi dendyoioi</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-5xl mx-auto my-8 bg-white rounded-xl shadow-md p-8 border border-gray-200">
+    
+    <!-- Header Title with Version 2 Badge -->
+    <div class="flex flex-wrap items-center justify-between border-b pb-4 mb-6">
+      <div>
+        <div class="flex items-center space-x-3">
+          <h1 class="text-2xl font-bold text-gray-900">Exportar a Holistor Win</h1>
+          <span class="bg-purple-100 text-purple-800 text-xs font-extrabold px-3 py-1 rounded-full border border-purple-300">
+            Solución 2: Native OS Alignment & Save-As
+          </span>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Simulación interactiva para presentación a Cliente & PM (T-024)</p>
+      </div>
+
+      <!-- Demo Control Panel: OS & Browser Simulation Switcher -->
+      <div class="flex items-center space-x-3 bg-gray-50 p-2.5 rounded-lg border border-gray-200 mt-3 sm:mt-0">
+        <div class="text-xs">
+          <label class="block font-bold text-gray-700">Simular OS Client:</label>
+          <select id="osSimulator" onchange="updateOSAndPathDisplay()" class="bg-white border rounded px-2 py-1 text-xs font-medium">
+            <option value="auto">Auto (Detectar OS)</option>
+            <option value="mac">macOS (/Users/...)</option>
+            <option value="windows">Windows OS (C:\...)</option>
+          </select>
+        </div>
+        <div class="text-xs">
+          <label class="block font-bold text-gray-700">Modo Firefox/Safari:</label>
+          <select id="exportFormatMode" class="bg-white border rounded px-2 py-1 text-xs font-medium">
+            <option value="zip">Archi. ZIP (1 Prompt Save-As)</option>
+            <option value="csv">Files CSV Terpisah (4 Prompts)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inspector Banner -->
+    <div id="browserInspector" class="mb-8 p-4 rounded-lg border bg-blue-50 border-blue-200 text-blue-900 text-sm">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <span id="osBadge" class="px-2.5 py-1 rounded-md text-xs font-bold bg-purple-600 text-white">Detectando OS...</span>
+          <span id="browserBadge" class="px-2.5 py-1 rounded-md text-xs font-bold bg-blue-600 text-white">Browser Engine...</span>
+        </div>
+        <span class="text-xs text-gray-500 font-mono" id="detectedOSText">Checking System...</span>
+      </div>
+      <div class="mt-2 text-xs text-blue-800" id="engineDesc"></div>
+    </div>
+
+    <!-- Sección 1: Seleccionar la vía de la empresa -->
+    <section class="mb-8">
+      <h2 class="text-sm font-bold text-gray-900 mb-3">
+        Seleccionar la vía de la empresa:
+      </h2>
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <button id="btnSeleccionarUbicacion" 
+                onclick="handleSeleccionarUbicacion()"
+                class="btn-green text-white font-medium px-5 py-2.5 rounded-lg shadow-sm transition-colors text-sm shrink-0 flex items-center justify-center">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+          </svg>
+          Seleccionar ubicación
+        </button>
+        <input type="text" 
+               id="rutaExpoWinInput" 
+               readonly 
+               value=""
+               class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-gray-50 text-sm font-mono text-gray-800 read-only:cursor-default focus:outline-none" />
+      </div>
+      <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
+        <span id="pathLabelOS">Ruta visual adaptada al sistema operativo activo.</span>
+        <span id="backendCanonicalBadge" class="font-mono text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+          Target Holistor Win DB: C:\HolistorW\WHDatos\Steam
+        </span>
+      </div>
+    </section>
+
+    <!-- Sección 2: Definir equivalencias de datos generales -->
+    <section class="mb-8">
+      <h2 class="text-sm font-bold text-gray-900 mb-3">
+        Definir equivalencias de datos generales:
+      </h2>
+      <div class="flex flex-wrap gap-3">
+        <button onclick="openTiposModal()" 
+                class="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
+          Tipos de Comprobantes
+        </button>
+        <button onclick="openRetModal()" 
+                class="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
+          Ret. / Perc. / Otros
+        </button>
+      </div>
+    </section>
+
+    <!-- Sección 3: Seleccionar período a exportar -->
+    <section class="mb-8">
+      <h2 class="text-sm font-bold text-gray-900 mb-3">
+        Seleccionar período a exportar:
+      </h2>
+      <div class="flex flex-col sm:flex-row items-start gap-6">
+        <div class="w-full sm:w-[200px]">
+          <label class="block text-xs font-bold text-gray-700 mb-1">Desde</label>
+          <input type="month" id="periodoDesde" value="2025-05" onchange="validatePeriodo()"
+                 class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500">
+        </div>
+        <div class="w-full sm:w-[200px]">
+          <label class="block text-xs font-bold text-gray-700 mb-1">Hasta</label>
+          <input type="month" id="periodoHasta" value="2025-05" onchange="validatePeriodo()"
+                 class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500">
+        </div>
+      </div>
+      <p id="periodoErrorText" class="text-xs text-red-600 font-medium mt-2 hidden"></p>
+    </section>
+
+    <!-- Sección 4: Botón Exportar -->
+    <div class="mt-8 pt-6 border-t border-gray-200 flex items-center justify-between">
+      <button id="btnExportar" 
+              onclick="handleExportar()"
+              class="btn-teal text-white font-medium px-6 py-2.5 rounded-lg shadow-sm transition-colors text-sm flex items-center">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        Exportar
+      </button>
+
+      <a href="index.html" class="text-xs text-teal-700 hover:underline font-medium">
+        ← Volver a Versión 1 (Standard Sprint 13)
+      </a>
+    </div>
+
+    <!-- Logs / Audit Console for Presentation -->
+    <div class="mt-8">
+      <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Audit Console Output (Solución 2)</h3>
+      <pre id="consoleLog" class="bg-gray-900 text-green-400 p-4 rounded-lg text-xs font-mono h-40 overflow-y-auto leading-relaxed border border-gray-800">Solución 2 Initialized. Visual path aligned dynamically with active OS...</pre>
+    </div>
+
+  </main>
+
+  <!-- Modal Guidance Prompt for Firefox / Safari (Solución 2 Feature) -->
+  <div id="modalGuidance" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-gray-200 m-4">
+      <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-4 mx-auto">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-center text-gray-900 mb-2">Instrucciones de Guardado</h3>
+      <p class="text-xs text-gray-600 text-center mb-4">
+        A continuación se abrirá el diálogo <strong>"Save As..."</strong> del sistema operativo. Por favor confirme o seleccione la carpeta de destino correspondiente a la vía <strong id="viaNameGuidance" class="font-mono text-purple-700">Steam</strong>.
+      </p>
+      <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 mb-6">
+        💡 <strong>Tip:</strong> Si su navegador descarga directamente a la carpeta <em>Downloads</em>, asegúrese de tener activada la opción <em>"Preguntar siempre dónde guardar los archivos"</em> en los ajustes de su navegador.
+      </div>
+      <button onclick="confirmAndExecuteSaveAs()" class="w-full btn-teal text-white py-2.5 rounded-lg text-xs font-medium shadow">
+        Entendido, Continuar al Diálogo de Guardado
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Tipos de Comprobantes -->
+  <div id="modalTipos" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 border border-gray-200 m-4">
+      <h3 class="text-lg font-bold text-gray-900 mb-2">Tipos de Comprobantes</h3>
+      <p class="text-xs text-gray-600 mb-4">Completar con los códigos de comprobantes utilizados en Holistor Win y el tipo correspondiente:</p>
+      <div class="overflow-x-auto max-h-64 mb-6 border rounded-lg">
+        <table class="w-full text-xs text-left text-gray-700">
+          <thead class="bg-gray-50 uppercase text-gray-500 border-b">
+            <tr>
+              <th class="p-3">Código GDC</th>
+              <th class="p-3">Descripción</th>
+              <th class="p-3">Código Win (2 char)</th>
+              <th class="p-3">Tipo Win (1 char)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="p-3 font-mono">001</td>
+              <td class="p-3">Factura A</td>
+              <td class="p-3"><input type="text" maxlength="2" value="FA" class="border rounded px-2 py-1 w-16 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="1" value="A" class="border rounded px-2 py-1 w-12 uppercase font-mono"></td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3 font-mono">006</td>
+              <td class="p-3">Factura B</td>
+              <td class="p-3"><input type="text" maxlength="2" value="FB" class="border rounded px-2 py-1 w-16 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="1" value="B" class="border rounded px-2 py-1 w-12 uppercase font-mono"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex justify-end space-x-3">
+        <button onclick="closeTiposModal()" class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-gray-50">Cancelar</button>
+        <button onclick="closeTiposModal(); log('Equivalencias guardadas.');" class="px-4 py-2 btn-teal text-white rounded-lg text-xs font-medium">Grabar relación</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Ret./Perc./Otros -->
+  <div id="modalRet" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 border border-gray-200 m-4">
+      <h3 class="text-lg font-bold text-gray-900 mb-2">Retenciones / Percepciones / Otros</h3>
+      <p class="text-xs text-gray-600 mb-4">Completar con los códigos de retenciones, percepciones, etc. utilizados en Holistor Win:</p>
+      <div class="overflow-x-auto max-h-64 mb-6 border rounded-lg">
+        <table class="w-full text-xs text-left text-gray-700">
+          <thead class="bg-gray-50 uppercase text-gray-500 border-b">
+            <tr>
+              <th class="p-3">Código GDC</th>
+              <th class="p-3">Descripción</th>
+              <th class="p-3">Tipo</th>
+              <th class="p-3">Código Win (4 char)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="p-3 font-mono">R-IVA</td>
+              <td class="p-3">Retención IVA</td>
+              <td class="p-3">Retención</td>
+              <td class="p-3"><input type="text" maxlength="4" value="RIVA" class="border rounded px-2 py-1 w-20 uppercase font-mono"></td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3 font-mono">P-IIBB</td>
+              <td class="p-3">Percepción IIBB Bs As</td>
+              <td class="p-3">Percepción</td>
+              <td class="p-3"><input type="text" maxlength="4" value="PIIB" class="border rounded px-2 py-1 w-20 uppercase font-mono"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex justify-end space-x-3">
+        <button onclick="closeRetModal()" class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-gray-50">Cancelar</button>
+        <button onclick="closeRetModal(); log('Equivalencias guardadas.');" class="px-4 py-2 btn-teal text-white rounded-lg text-xs font-medium">Grabar relación</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let selectedDirectoryHandle = null;
+    let currentFolderName = 'Steam';
+    let isMac = true;
+    let isChromiumFSA = false;
+
+    function log(msg, type = 'info') {
+      const consoleEl = document.getElementById('consoleLog');
+      const time = new Date().toLocaleTimeString();
+      const prefix = type === 'error' ? '❌ [ERROR]' : type === 'warn' ? '⚠️ [WARN]' : 'ℹ️ [INFO]';
+      consoleEl.textContent += `\n[${time}] ${prefix} ${msg}`;
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function updateOSAndPathDisplay() {
+      const osOverride = document.getElementById('osSimulator').value;
+      const ua = navigator.userAgent.toLowerCase();
+
+      if (osOverride === 'mac' || (osOverride === 'auto' && (ua.includes('mac') || ua.includes('os x')))) {
+        isMac = true;
+        document.getElementById('osBadge').textContent = 'macOS Detected';
+        document.getElementById('osBadge').className = 'px-2.5 py-1 rounded-md text-xs font-bold bg-purple-600 text-white';
+        document.getElementById('detectedOSText').textContent = 'OS Active: Apple macOS';
+        document.getElementById('pathLabelOS').textContent = 'Ruta visual adaptada para macOS (POSIX Path)';
+      } else {
+        isMac = false;
+        document.getElementById('osBadge').textContent = 'Windows OS Detected';
+        document.getElementById('osBadge').className = 'px-2.5 py-1 rounded-md text-xs font-bold bg-blue-600 text-white';
+        document.getElementById('detectedOSText').textContent = 'OS Active: Microsoft Windows';
+        document.getElementById('pathLabelOS').textContent = 'Ruta visual adaptada para Windows OS';
+      }
+
+      // Feature A: OS-Aware Visual Path Update
+      const visualPath = isMac 
+        ? `/Users/dendyaditya/Desktop/${currentFolderName}`
+        : `C:\\HolistorW\\WHDatos\\${currentFolderName}`;
+
+      document.getElementById('rutaExpoWinInput').value = visualPath;
+      document.getElementById('backendCanonicalBadge').textContent = `Target Holistor Win DB: C:\\HolistorW\\WHDatos\\${currentFolderName}`;
+
+      log(`OS Display updated -> Mode: ${isMac ? 'macOS' : 'Windows'} | Visual Path: "${visualPath}"`);
+    }
+
+    function detectBrowserEngine() {
+      const hasFSAPI = ('showDirectoryPicker' in window);
+      if (hasFSAPI) {
+        isChromiumFSA = true;
+        document.getElementById('browserBadge').textContent = 'Chromium Engine';
+        document.getElementById('browserBadge').className = 'px-2.5 py-1 rounded-md text-xs font-bold bg-green-600 text-white';
+        document.getElementById('engineDesc').textContent = '✅ Su browser soporta Penulisan Langsung ke Folder (File System Access API).';
+      } else {
+        isChromiumFSA = false;
+        document.getElementById('browserBadge').textContent = 'Firefox / Safari Engine';
+        document.getElementById('browserBadge').className = 'px-2.5 py-1 rounded-md text-xs font-bold bg-amber-600 text-white';
+        document.getElementById('engineDesc').textContent = 'ℹ️ Firefox/Safari: Penulisan dilakukan via Native OS "Save As..." Dialog.';
+      }
+    }
+
+    async function handleSeleccionarUbicacion() {
+      log('User clicked "Seleccionar ubicación"...');
+      if (isChromiumFSA && 'showDirectoryPicker' in window) {
+        try {
+          selectedDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+          currentFolderName = selectedDirectoryHandle.name || 'Steam';
+          updateOSAndPathDisplay();
+          log(`Folder selected via Direct Picker: "${currentFolderName}"`);
+        } catch (err) {
+          if (err.name === 'AbortError') {
+            log('User cancelled folder picker dialog.', 'warn');
+          } else {
+            log(`Error picking directory: ${err.message}`, 'error');
+          }
+        }
+      } else {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.setAttribute('webkitdirectory', '');
+        input.setAttribute('directory', '');
+        input.onchange = (e) => {
+          const files = e.target.files;
+          if (files && files.length > 0) {
+            const relativePath = files[0].webkitRelativePath || '';
+            currentFolderName = relativePath.split('/')[0] || 'Steam';
+            updateOSAndPathDisplay();
+            log(`Folder selected via webkitdirectory: "${currentFolderName}"`);
+          }
+        };
+        input.click();
+      }
+    }
+
+    function validatePeriodo() {
+      const desde = document.getElementById('periodoDesde').value;
+      const hasta = document.getElementById('periodoHasta').value;
+      const errorEl = document.getElementById('periodoErrorText');
+      const btnExportar = document.getElementById('btnExportar');
+
+      if (!desde || !hasta) {
+        errorEl.classList.add('hidden');
+        btnExportar.disabled = false;
+        return true;
+      }
+
+      const [yD, mD] = desde.split('-').map(Number);
+      const [yH, mH] = hasta.split('-').map(Number);
+      const fromIdx = yD * 12 + (mD - 1);
+      const toIdx = yH * 12 + (mH - 1);
+
+      if (toIdx < fromIdx) {
+        errorEl.textContent = 'Período "Hasta" debe ser mayor o igual a "Desde".';
+        errorEl.classList.remove('hidden');
+        btnExportar.disabled = true;
+        log('Period Validation Error: Hasta < Desde', 'warn');
+        return false;
+      }
+
+      if (toIdx - fromIdx + 1 > 12) {
+        errorEl.textContent = 'El rango seleccionado no puede exceder 12 meses.';
+        errorEl.classList.remove('hidden');
+        btnExportar.disabled = true;
+        log('Period Validation Error: Range > 12 months', 'warn');
+        return false;
+      }
+
+      errorEl.classList.add('hidden');
+      btnExportar.disabled = false;
+      return true;
+    }
+
+    // Dummy CSV Generators
+    function generateDummyCSVs() {
+      return [
+        { filename: 'IVREGESP.csv', content: 'Cod;Desc;WinCod\nR-IVA;Retencion IVA;RIVA\nP-IIBB;Percepcion IIBB;PIIB\n' },
+        { filename: 'IVOTRDGI.csv', content: 'EmpCodigo;Periodo;Tipo;Comprobante;Importe\n5;202505;FA;0001-00001234;150000.50\n' },
+        { filename: 'MOVIVAC.csv', content: 'Fecha;Tipo;Nro;Neto;IVA;Total\n2025-05-10;FA;0001-00001234;123967.35;26033.15;150000.50\n' },
+        { filename: 'IVDETPER.csv', content: 'Nro;Concepto;Alicuota;Retenido\n0001-00001234;RIVA;3.00;3719.02\n' }
+      ];
+    }
+
+    async function handleExportar() {
+      if (!validatePeriodo()) return;
+
+      log(`Initiating export process for Vía "${currentFolderName}"...`);
+
+      if (isChromiumFSA && selectedDirectoryHandle) {
+        const files = generateDummyCSVs();
+        try {
+          log('Writing CSV files directly to local directory handle (Chromium Direct)...');
+          for (const file of files) {
+            const fileHandle = await selectedDirectoryHandle.getFileHandle(file.filename, { create: true });
+            const writable = await fileHandle.createWritable();
+            await writable.write(file.content);
+            await writable.close();
+            log(`  -> File "${file.filename}" written successfully to disk.`);
+          }
+          alert(`✅ Ekspor Berhasil!\n\n${files.length} file CSV Holistor Win telah ditulis langsung ke folder "${currentFolderName}".`);
+        } catch (err) {
+          log(`Direct Write failed: ${err.message}. Showing Guidance Prompt for Save-As...`, 'warn');
+          showGuidanceModal();
+        }
+      } else {
+        // Feature B: Show Guidance Modal before Save-As Dialog for Firefox/Safari
+        showGuidanceModal();
+      }
+    }
+
+    function showGuidanceModal() {
+      document.getElementById('viaNameGuidance').textContent = currentFolderName;
+      document.getElementById('modalGuidance').classList.remove('hidden');
+    }
+
+    async function confirmAndExecuteSaveAs() {
+      document.getElementById('modalGuidance').classList.add('hidden');
+      const mode = document.getElementById('exportFormatMode').value;
+      const files = generateDummyCSVs();
+
+      log(`Executing Native Save-As Trigger (Mode: ${mode.toUpperCase()})...`);
+
+      if (mode === 'zip') {
+        const zip = new JSZip();
+        const folder = zip.folder(currentFolderName);
+        files.forEach(f => folder.file(f.filename, f.content));
+
+        log(`Compressing ${files.length} CSV files into "Holistor_Export_${currentFolderName}.zip"...`);
+        const blob = await zip.generateAsync({ type: 'blob' });
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Holistor_Export_${currentFolderName}.zip`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        log(`✅ Native OS Save-As Triggered for "Holistor_Export_${currentFolderName}.zip"`);
+      } else {
+        // Multi-file CSV download option with delays
+        log(`Triggering ${files.length} individual CSV downloads sequentially...`);
+        files.forEach((file, index) => {
+          setTimeout(() => {
+            const blob = new Blob([file.content], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = file.filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            log(`  -> Save-As Triggered for "${file.filename}"`);
+          }, index * 400);
+        });
+      }
+    }
+
+    // Modal Control Functions
+    function openTiposModal() { document.getElementById('modalTipos').classList.remove('hidden'); }
+    function closeTiposModal() { document.getElementById('modalTipos').classList.add('hidden'); }
+    function openRetModal() { document.getElementById('modalRet').classList.remove('hidden'); }
+    function closeRetModal() { document.getElementById('modalRet').classList.add('hidden'); }
+
+    // Init
+    detectBrowserEngine();
+    updateOSAndPathDisplay();
+  </script>
+</body>
+</html>
