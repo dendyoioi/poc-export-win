@@ -115,7 +115,7 @@
         </button>
         <input type="text" 
                id="rutaExpoWinInput" 
-               onchange="customPath = this.value; log('Path manually updated: ' + this.value);"
+               oninput="customPath = this.value; currentFolderName = this.value.split(/[/\\]/).pop() || 'Steam'; document.getElementById('backendCanonicalBadge').textContent = 'Target Holistor Win DB: C:\\HolistorW\\WHDatos\\' + currentFolderName; log('Path manually updated: ' + this.value);"
                value=""
                placeholder="/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos"
                class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm font-mono text-gray-800 focus:outline-none focus:ring-1 focus:ring-teal-500" />
@@ -389,10 +389,15 @@
       if ('showDirectoryPicker' in window) {
         try {
           selectedDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-          currentFolderName = selectedDirectoryHandle.name || 'WHDatos';
-          customPath = `/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/${currentFolderName}`;
+          const pickedName = selectedDirectoryHandle.name || 'WHDatos';
+          currentFolderName = pickedName;
+          
+          // Dynamically construct path or allow user to adjust
+          const baseDir = '/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW';
+          customPath = `${baseDir}/${pickedName}`;
+          
           updateOSAndPathDisplay();
-          log(`Native OS Folder Picker returned path for selected directory: "${customPath}"`);
+          log(`Native OS Folder Picker selected: "${pickedName}" -> Path: "${customPath}"`);
         } catch (err) {
           if (err.name === 'AbortError') {
             log('User cancelled folder picker dialog.', 'warn');
@@ -407,10 +412,12 @@
           const files = e.target.files;
           if (files && files.length > 0) {
             const relativePath = files[0].webkitRelativePath || '';
-            currentFolderName = relativePath.split('/')[0] || 'WHDatos';
-            customPath = `/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/${currentFolderName}`;
+            const pickedName = relativePath.split('/')[0] || 'WHDatos';
+            currentFolderName = pickedName;
+            const baseDir = '/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW';
+            customPath = `${baseDir}/${pickedName}`;
             updateOSAndPathDisplay();
-            log(`Native OS Folder Picker returned path for selected directory: "${customPath}"`);
+            log(`Native OS Folder Picker selected: "${pickedName}" -> Path: "${customPath}"`);
           }
         };
         input.click();
