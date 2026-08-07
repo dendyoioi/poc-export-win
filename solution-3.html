@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulación Exportar a Holistor Win - Solución 3 (Tauri / Electron Helper)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Inter -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .bg-teal-header { background-color: #5BA4A4; }
+    .btn-green { background-color: #2CC85A; }
+    .btn-green:hover { background-color: #25B34F; }
+    .btn-teal { background-color: #008080; }
+    .btn-teal:hover { background-color: #006666; }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen text-gray-800">
+
+  <!-- Top Header Mockup (Sprint 13 UI) -->
+  <header class="bg-teal-header text-white px-6 py-3 flex flex-wrap items-center justify-between shadow-sm">
+    <div class="flex items-center space-x-6">
+      <div class="flex items-center space-x-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <span class="font-bold text-lg tracking-wide">Contabilidad</span>
+      </div>
+      <div class="text-sm font-medium flex items-center space-x-4">
+        <span>Empresa: <strong class="underline">Mavi - Mavi S.A.</strong></span>
+        <span>Período: <strong>05/2025</strong></span>
+      </div>
+    </div>
+    <div class="flex items-center space-x-4">
+      <div class="bg-teal-700/40 text-xs px-3 py-1.5 rounded-full font-semibold border border-teal-200/30">
+        Comprobantes: 18 / 1000
+      </div>
+      <div class="flex items-center space-x-2 text-sm bg-teal-800/30 px-3 py-1 rounded-full">
+        <div class="w-6 h-6 rounded-full bg-teal-200 text-teal-900 flex items-center justify-center font-bold text-xs">D</div>
+        <span>dendyoioi dendyoioi</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-5xl mx-auto my-8 bg-white rounded-xl shadow-md p-8 border border-gray-200">
+    
+    <!-- Header Title with Version 3 Badge -->
+    <div class="flex flex-wrap items-center justify-between border-b pb-4 mb-6">
+      <div>
+        <div class="flex items-center space-x-3">
+          <h1 class="text-2xl font-bold text-gray-900">Exportar a Holistor Win</h1>
+          <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full border border-emerald-300 flex items-center">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
+            Solución 3: Tauri / Electron Desktop Helper
+          </span>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Arquitectura Bridge Local: Direct File Write 100% idéntico en Chrome, Firefox y Safari (T-024)</p>
+      </div>
+
+      <!-- Demo Control Panel: Helper Status & OS Simulator -->
+      <div class="flex items-center space-x-3 bg-gray-50 p-2.5 rounded-lg border border-gray-200 mt-3 sm:mt-0">
+        <div class="text-xs">
+          <label class="block font-bold text-gray-700">Estado Helper:</label>
+          <select id="helperStatusToggle" onchange="toggleHelperConnection()" class="bg-white border rounded px-2 py-1 text-xs font-bold text-emerald-700">
+            <option value="connected">🟢 Conectado (Port 48123)</option>
+            <option value="offline">🔴 Desconectado (Offline)</option>
+          </select>
+        </div>
+        <div class="text-xs">
+          <label class="block font-bold text-gray-700">Sistema Operativo:</label>
+          <select id="osSimulator" onchange="updateOSAndPathDisplay()" class="bg-white border rounded px-2 py-1 text-xs font-medium">
+            <option value="auto">Auto (Detectar OS)</option>
+            <option value="mac">macOS (/Users/...)</option>
+            <option value="windows">Windows OS (C:\...)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Local Helper Connection Status Inspector Banner -->
+    <div id="helperInspectorBanner" class="mb-8 p-4 rounded-lg border bg-emerald-50 border-emerald-200 text-emerald-950 text-sm">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <span id="helperStatusBadge" class="px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-600 text-white flex items-center">
+            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            Tauri / Electron Helper Active
+          </span>
+          <span class="text-xs font-mono text-emerald-900">Service: <strong>http://127.0.0.1:48123/v1/export</strong></span>
+        </div>
+        <span id="browserTag" class="text-xs bg-white text-gray-700 px-2 py-1 rounded border font-mono">Browser Engine: Chrome/Firefox/Safari (100% Parity)</span>
+      </div>
+      <p id="helperDescText" class="mt-2 text-xs text-emerald-800">
+        ⚡ <strong>Local Agent Activo:</strong> Todos los navegadores (Firefox, Safari y Chrome) escribirán los archivos CSV directamente en el disco duro local a través del proceso Tauri/Electron, superando el 100% de las restricciones de sandbox.
+      </p>
+    </div>
+
+    <!-- Sección 1: Seleccionar la vía de la empresa -->
+    <section class="mb-8">
+      <h2 class="text-sm font-bold text-gray-900 mb-3">
+        Seleccionar la vía de la empresa:
+      </h2>
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <button id="btnSeleccionarUbicacion" 
+                onclick="handleSeleccionarUbicacion()"
+                class="btn-green text-white font-medium px-5 py-2.5 rounded-lg shadow-sm transition-colors text-sm shrink-0 flex items-center justify-center">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+          </svg>
+          Seleccionar ubicación
+        </button>
+        <input type="text" 
+               id="rutaExpoWinInput" 
+               readonly 
+               value=""
+               class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-gray-50 text-sm font-mono text-gray-800 read-only:cursor-default focus:outline-none" />
+      </div>
+      <div class="mt-2 flex flex-wrap items-center justify-between text-xs text-gray-500">
+        <span id="pathLabelOS">Jalun fisik asli yang didapatkan melalui Native OS Folder Picker.</span>
+        <span id="backendCanonicalBadge" class="font-mono text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+          Target Holistor Win DB: C:\HolistorW\WHDatos\Steam
+        </span>
+      </div>
+    </section>
+
+    <!-- Sección 2: Definir equivalencias de datos generales -->
+    <section class="mb-8">
+      <h2 class="text-sm font-bold text-gray-900 mb-3">
+        Definir equivalencias de datos generales:
+      </h2>
+      <div class="flex flex-wrap gap-3">
+        <button onclick="openTiposModal()" 
+                class="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
+          Tipos de Comprobantes
+        </button>
+        <button onclick="openRetModal()" 
+                class="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
+          Ret. / Perc. / Otros
+        </button>
+      </div>
+    </section>
+
+    <!-- Sección 3: Seleccionar período a exportar -->
+    <section class="mb-8">
+      <h2 class="text-sm font-bold text-gray-900 mb-3">
+        Seleccionar período a exportar:
+      </h2>
+      <div class="flex flex-col sm:flex-row items-start gap-6">
+        <div class="w-full sm:w-[200px]">
+          <label class="block text-xs font-bold text-gray-700 mb-1">Desde</label>
+          <input type="month" id="periodoDesde" value="2025-05" onchange="validatePeriodo()"
+                 class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500">
+        </div>
+        <div class="w-full sm:w-[200px]">
+          <label class="block text-xs font-bold text-gray-700 mb-1">Hasta</label>
+          <input type="month" id="periodoHasta" value="2025-05" onchange="validatePeriodo()"
+                 class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500">
+        </div>
+      </div>
+      <p id="periodoErrorText" class="text-xs text-red-600 font-medium mt-2 hidden"></p>
+    </section>
+
+    <!-- Sección 4: Botón Exportar -->
+    <div class="mt-8 pt-6 border-t border-gray-200 flex flex-wrap items-center justify-between gap-4">
+      <button id="btnExportar" 
+              onclick="handleExportar()"
+              class="btn-teal text-white font-medium px-6 py-2.5 rounded-lg shadow-sm transition-colors text-sm flex items-center">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        Exportar vía Desktop Helper
+      </button>
+
+      <div class="flex items-center space-x-3 text-xs">
+        <a href="index.html" class="text-gray-500 hover:text-teal-700 hover:underline">Versión 1 (Standard)</a>
+        <span class="text-gray-300">|</span>
+        <a href="solution-2.html" class="text-gray-500 hover:text-purple-700 hover:underline">Versión 2 (Save-As)</a>
+      </div>
+    </div>
+
+    <!-- Technical Proposal Section for PM & Client -->
+    <div class="mt-10 p-6 bg-slate-900 text-slate-100 rounded-xl border border-slate-800">
+      <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider mb-3 flex items-center">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Propuesta de Arquitectura Técnica (Tauri / Electron Helper)
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        <div class="bg-slate-800/80 p-3.5 rounded-lg border border-slate-700/60">
+          <span class="font-bold text-amber-300 block mb-1">1. Compatibilidad Total (100%)</span>
+          Funciona exactamente igual en Chrome, Firefox, Safari y Edge, eliminando las restricciones de la API W3C en navegadores sin soporte.
+        </div>
+        <div class="bg-slate-800/80 p-3.5 rounded-lg border border-slate-700/60">
+          <span class="font-bold text-cyan-300 block mb-1">2. Ligero & Sin Sobrecarga</span>
+          Con Tauri (Rust), el ejecutable pesa ~8 MB y utiliza &lt; 15 MB de RAM. Se ejecuta en segundo plano en la bandeja de sistema (Menu Bar en Mac).
+        </div>
+        <div class="bg-slate-800/80 p-3.5 rounded-lg border border-slate-700/60">
+          <span class="font-bold text-emerald-300 block mb-1">3. Seguridad & CORS Control</span>
+          Escucha únicamente en <code>127.0.0.1:48123</code> con token de sesión firmado y políticas de origen seguro (CORS) restringidas a Holistor Web.
+        </div>
+      </div>
+    </div>
+
+    <!-- Audit Console -->
+    <div class="mt-6">
+      <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Audit Console Output (Solución 3)</h3>
+      <pre id="consoleLog" class="bg-gray-900 text-green-400 p-4 rounded-lg text-xs font-mono h-40 overflow-y-auto leading-relaxed border border-gray-800">Solución 3 (Local Helper Architecture) Initialized. Active Port: 48123...</pre>
+    </div>
+
+  </main>
+
+  <!-- Modal Offline Warning (If Helper is Disconnected) -->
+  <div id="modalOffline" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-gray-200 m-4 text-center">
+      <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4 mx-auto">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-gray-900 mb-2">Local Helper Desconectado</h3>
+      <p class="text-xs text-gray-600 mb-4">
+        No se pudo establecer conexión con el servicio <code>http://127.0.0.1:48123</code>. Para utilizar la escritura directa en carpetas locales en Firefox/Safari, por favor inicie el agente <strong>Holistor Local Helper</strong>.
+      </p>
+      <div class="flex justify-center space-x-3">
+        <button onclick="closeOfflineModal()" class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-gray-50">Cancelar</button>
+        <button onclick="closeOfflineModal(); log('Simulando descarga de Holistor Helper installer...'); alert('Iniciando descarga de Holistor_Helper_Setup.dmg / .exe...');" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-medium shadow hover:bg-emerald-700">
+          Descargar Helper (.dmg / .exe)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tipos de Comprobantes -->
+  <div id="modalTipos" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 border border-gray-200 m-4">
+      <h3 class="text-lg font-bold text-gray-900 mb-2">Tipos de Comprobantes</h3>
+      <p class="text-xs text-gray-600 mb-4">Completar con los códigos de comprobantes utilizados en Holistor Win y el tipo correspondiente:</p>
+      <div class="overflow-x-auto max-h-64 mb-6 border rounded-lg">
+        <table class="w-full text-xs text-left text-gray-700">
+          <thead class="bg-gray-50 uppercase text-gray-500 border-b">
+            <tr>
+              <th class="p-3">Código GDC</th>
+              <th class="p-3">Descripción</th>
+              <th class="p-3">Código Win (2 char)</th>
+              <th class="p-3">Tipo Win (1 char)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="p-3 font-mono">001</td>
+              <td class="p-3">Factura A</td>
+              <td class="p-3"><input type="text" maxlength="2" value="FA" class="border rounded px-2 py-1 w-16 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="1" value="A" class="border rounded px-2 py-1 w-12 uppercase font-mono"></td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3 font-mono">006</td>
+              <td class="p-3">Factura B</td>
+              <td class="p-3"><input type="text" maxlength="2" value="FB" class="border rounded px-2 py-1 w-16 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="1" value="B" class="border rounded px-2 py-1 w-12 uppercase font-mono"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex justify-end space-x-3">
+        <button onclick="closeTiposModal()" class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-gray-50">Cancelar</button>
+        <button onclick="closeTiposModal(); log('Equivalencias guardadas.');" class="px-4 py-2 btn-teal text-white rounded-lg text-xs font-medium">Grabar relación</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Ret./Perc./Otros -->
+  <div id="modalRet" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 border border-gray-200 m-4">
+      <h3 class="text-lg font-bold text-gray-900 mb-2">Retenciones / Percepciones / Otros</h3>
+      <p class="text-xs text-gray-600 mb-4">Completar con los códigos de retenciones, percepciones, etc. utilizados en Holistor Win:</p>
+      <div class="overflow-x-auto max-h-64 mb-6 border rounded-lg">
+        <table class="w-full text-xs text-left text-gray-700">
+          <thead class="bg-gray-50 uppercase text-gray-500 border-b">
+            <tr>
+              <th class="p-3">Código GDC</th>
+              <th class="p-3">Descripción</th>
+              <th class="p-3">Tipo</th>
+              <th class="p-3">Código Win (4 char)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="p-3 font-mono">R-IVA</td>
+              <td class="p-3">Retención IVA</td>
+              <td class="p-3">Retención</td>
+              <td class="p-3"><input type="text" maxlength="4" value="RIVA" class="border rounded px-2 py-1 w-20 uppercase font-mono"></td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3 font-mono">P-IIBB</td>
+              <td class="p-3">Percepción IIBB Bs As</td>
+              <td class="p-3">Percepción</td>
+              <td class="p-3"><input type="text" maxlength="4" value="PIIB" class="border rounded px-2 py-1 w-20 uppercase font-mono"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex justify-end space-x-3">
+        <button onclick="closeRetModal()" class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-gray-50">Cancelar</button>
+        <button onclick="closeRetModal(); log('Equivalencias guardadas.');" class="px-4 py-2 btn-teal text-white rounded-lg text-xs font-medium">Grabar relación</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let currentFolderName = 'Steam';
+    let isMac = true;
+    let isHelperConnected = true;
+
+    function log(msg, type = 'info') {
+      const consoleEl = document.getElementById('consoleLog');
+      const time = new Date().toLocaleTimeString();
+      const prefix = type === 'error' ? '❌ [ERROR]' : type === 'warn' ? '⚠️ [WARN]' : 'ℹ️ [INFO]';
+      consoleEl.textContent += `\n[${time}] ${prefix} ${msg}`;
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function toggleHelperConnection() {
+      const val = document.getElementById('helperStatusToggle').value;
+      const badge = document.getElementById('helperStatusBadge');
+      const banner = document.getElementById('helperInspectorBanner');
+      const desc = document.getElementById('helperDescText');
+
+      if (val === 'connected') {
+        isHelperConnected = true;
+        badge.className = 'px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-600 text-white flex items-center';
+        badge.innerHTML = `<svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Tauri / Electron Helper Active`;
+        banner.className = 'mb-8 p-4 rounded-lg border bg-emerald-50 border-emerald-200 text-emerald-950 text-sm';
+        desc.innerHTML = `⚡ <strong>Local Agent Activo:</strong> Todos los navegadores (Firefox, Safari y Chrome) escribirán los archivos CSV directamente en el disco duro local a través del proceso Tauri/Electron, superando el 100% de las restricciones de sandbox.`;
+        log('Helper connection restored: Local Agent listening on 127.0.0.1:48123');
+      } else {
+        isHelperConnected = false;
+        badge.className = 'px-2.5 py-1 rounded-md text-xs font-bold bg-red-600 text-white flex items-center';
+        badge.innerHTML = `❌ Helper Offline`;
+        banner.className = 'mb-8 p-4 rounded-lg border bg-red-50 border-red-200 text-red-950 text-sm';
+        desc.innerHTML = `🔴 <strong>Helper Desconectado:</strong> Sin el agente local, Firefox y Safari volverán al modo de descarga de navegador predeterminado. Por favor ejecute o instale el agente.`;
+        log('Helper connection lost: 127.0.0.1:48123 unreachable', 'warn');
+      }
+    }
+
+    function updateOSAndPathDisplay() {
+      const osOverride = document.getElementById('osSimulator').value;
+      const ua = navigator.userAgent.toLowerCase();
+
+      if (osOverride === 'mac' || (osOverride === 'auto' && (ua.includes('mac') || ua.includes('os x')))) {
+        isMac = true;
+        document.getElementById('pathLabelOS').textContent = 'Path fisik macOS yang diperoleh via Tauri Native Dialog Picker (dialog.showOpenDialog)';
+      } else {
+        isMac = false;
+        document.getElementById('pathLabelOS').textContent = 'Path fisik Windows OS yang diperoleh via Tauri Native Dialog Picker';
+      }
+
+      const visualPath = isMac 
+        ? `/Users/dendyaditya/Desktop/${currentFolderName}`
+        : `C:\\HolistorW\\WHDatos\\${currentFolderName}`;
+
+      document.getElementById('rutaExpoWinInput').value = visualPath;
+      document.getElementById('backendCanonicalBadge').textContent = `Target Holistor Win DB: C:\\HolistorW\\WHDatos\\${currentFolderName}`;
+
+      log(`OS Context updated -> Mode: ${isMac ? 'macOS' : 'Windows'} | Path: "${visualPath}"`);
+    }
+
+    async function handleSeleccionarUbicacion() {
+      log('User triggered Native OS Folder Picker via Tauri/Electron Bridge...');
+      if (!isHelperConnected) {
+        document.getElementById('modalOffline').classList.remove('hidden');
+        return;
+      }
+
+      // Simulate Tauri / Electron native dialog invocation
+      log('Calling `tauri.dialog.open({ directory: true })` on host OS...');
+      const sampleNames = ['Steam', 'Empresa01', 'Holistor_Datos', 'Ventas_2025'];
+      currentFolderName = sampleNames[Math.floor(Math.random() * sampleNames.length)];
+      updateOSAndPathDisplay();
+      log(`Native OS Folder Picker returned path for directory: "${currentFolderName}"`);
+    }
+
+    function validatePeriodo() {
+      const desde = document.getElementById('periodoDesde').value;
+      const hasta = document.getElementById('periodoHasta').value;
+      const errorEl = document.getElementById('periodoErrorText');
+      const btnExportar = document.getElementById('btnExportar');
+
+      if (!desde || !hasta) {
+        errorEl.classList.add('hidden');
+        btnExportar.disabled = false;
+        return true;
+      }
+
+      const [yD, mD] = desde.split('-').map(Number);
+      const [yH, mH] = hasta.split('-').map(Number);
+      const fromIdx = yD * 12 + (mD - 1);
+      const toIdx = yH * 12 + (mH - 1);
+
+      if (toIdx < fromIdx) {
+        errorEl.textContent = 'Período "Hasta" debe ser mayor o igual a "Desde".';
+        errorEl.classList.remove('hidden');
+        btnExportar.disabled = true;
+        log('Period Validation Error: Hasta < Desde', 'warn');
+        return false;
+      }
+
+      if (toIdx - fromIdx + 1 > 12) {
+        errorEl.textContent = 'El rango seleccionado no puede exceder 12 meses.';
+        errorEl.classList.remove('hidden');
+        btnExportar.disabled = true;
+        log('Period Validation Error: Range > 12 months', 'warn');
+        return false;
+      }
+
+      errorEl.classList.add('hidden');
+      btnExportar.disabled = false;
+      return true;
+    }
+
+    // Dummy CSV Generators
+    function generateDummyCSVs() {
+      return [
+        { filename: 'IVREGESP.csv', content: 'Cod;Desc;WinCod\nR-IVA;Retencion IVA;RIVA\nP-IIBB;Percepcion IIBB;PIIB\n' },
+        { filename: 'IVOTRDGI.csv', content: 'EmpCodigo;Periodo;Tipo;Comprobante;Importe\n5;202505;FA;0001-00001234;150000.50\n' },
+        { filename: 'MOVIVAC.csv', content: 'Fecha;Tipo;Nro;Neto;IVA;Total\n2025-05-10;FA;0001-00001234;123967.35;26033.15;150000.50\n' },
+        { filename: 'IVDETPER.csv', content: 'Nro;Concepto;Alicuota;Retenido\n0001-00001234;RIVA;3.00;3719.02\n' }
+      ];
+    }
+
+    async function handleExportar() {
+      if (!validatePeriodo()) return;
+
+      if (!isHelperConnected) {
+        document.getElementById('modalOffline').classList.remove('hidden');
+        return;
+      }
+
+      const targetPath = document.getElementById('rutaExpoWinInput').value;
+      const files = generateDummyCSVs();
+
+      log(`Sending HTTP POST to http://127.0.0.1:48123/v1/export ...`);
+      log(`Payload -> Target Directory: "${targetPath}" | File Count: ${files.length}`);
+
+      // Simulate Tauri Local Write Execution
+      setTimeout(() => {
+        log('Tauri Process Response (200 OK): Direct FS Write executed successfully!');
+        files.forEach(f => log(`  [DISK WRITE SUCCESS] -> ${targetPath}/${f.filename}`));
+        
+        alert(`✅ EXPORT SUCESSFUL VIA TAURI / ELECTRON HELPER!\n\nLocation Target: ${targetPath}\n\nAll 4 CSV files have been written directly to disk. This works 100% identically in Firefox, Safari, and Chrome!`);
+      }, 400);
+    }
+
+    function closeOfflineModal() { document.getElementById('modalOffline').classList.add('hidden'); }
+    function openTiposModal() { document.getElementById('modalTipos').classList.remove('hidden'); }
+    function closeTiposModal() { document.getElementById('modalTipos').classList.add('hidden'); }
+    function openRetModal() { document.getElementById('modalRet').classList.remove('hidden'); }
+    function closeRetModal() { document.getElementById('modalRet').classList.add('hidden'); }
+
+    // Init
+    updateOSAndPathDisplay();
+  </script>
+</body>
+</html>
