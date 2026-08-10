@@ -395,32 +395,27 @@
     function resolveDynamicPath(currentPath, folderName) {
       if (!folderName) return currentPath;
 
-      // If currentPath is empty, initialize base path with selected folder
+      // 1. If no path is configured yet, set directly to folderName
       if (!currentPath || currentPath.trim() === '') {
-        return isMac
-          ? `/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos/${folderName}`
-          : `C:\\HolistorW\\WHDatos\\${folderName}`;
+        return folderName;
       }
 
       const sep = currentPath.includes('\\') ? '\\' : '/';
       const isAbsoluteUnix = currentPath.startsWith('/');
-      const isWindowsDrive = currentPath.match(/^[a-zA-Z]:/);
-
       const parts = currentPath.split(/[/\\]/).filter(Boolean);
 
       if (parts.length === 0) return folderName;
 
-      // Check if selected folder already exists in current path
+      // 2. Search if selected folderName exists anywhere in current path tree (e.g. user picked a parent folder)
       const idx = parts.indexOf(folderName);
       if (idx !== -1) {
-        // Slice path up to selected folder (e.g. user selected parent folder)
         const sliced = parts.slice(0, idx + 1);
         let res = sliced.join(sep);
         if (isAbsoluteUnix) res = '/' + res;
         return res;
       }
 
-      // Otherwise, replace leaf folder or append dynamically
+      // 3. Otherwise replace leaf segment with selected folderName
       parts[parts.length - 1] = folderName;
       let res = parts.join(sep);
       if (isAbsoluteUnix) res = '/' + res;
