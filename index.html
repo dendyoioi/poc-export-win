@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,14 +12,32 @@
   <!-- FontInter -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .bg-teal-header { background-color: #5BA4A4; }
-    .btn-green { background-color: #2CC85A; }
-    .btn-green:hover { background-color: #25B34F; }
-    .btn-teal { background-color: #008080; }
-    .btn-teal:hover { background-color: #006666; }
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .bg-teal-header {
+      background-color: #5BA4A4;
+    }
+
+    .btn-green {
+      background-color: #2CC85A;
+    }
+
+    .btn-green:hover {
+      background-color: #25B34F;
+    }
+
+    .btn-teal {
+      background-color: #008080;
+    }
+
+    .btn-teal:hover {
+      background-color: #006666;
+    }
   </style>
 </head>
+
 <body class="bg-gray-100 min-h-screen text-gray-800">
 
   <!-- Top Header Mockup (Sprint 13 UI) -->
@@ -26,7 +45,7 @@
     <div class="flex items-center space-x-6">
       <div class="flex items-center space-x-2">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
         <span class="font-bold text-lg tracking-wide">Contabilidad</span>
       </div>
@@ -40,7 +59,8 @@
         Comprobantes: 18 / 1000
       </div>
       <div class="flex items-center space-x-2 text-sm bg-teal-800/30 px-3 py-1 rounded-full">
-        <div class="w-6 h-6 rounded-full bg-teal-200 text-teal-900 flex items-center justify-center font-bold text-xs">D</div>
+        <div class="w-6 h-6 rounded-full bg-teal-200 text-teal-900 flex items-center justify-center font-bold text-xs">D
+        </div>
         <span>dendyoioi dendyoioi</span>
       </div>
     </div>
@@ -48,7 +68,7 @@
 
   <!-- Main Container -->
   <main class="max-w-5xl mx-auto my-8 bg-white rounded-xl shadow-md p-8 border border-gray-200">
-    
+
     <!-- Title -->
     <h1 class="text-2xl font-bold text-gray-900 mb-6 border-b pb-4">
       Exportar a Holistor Win
@@ -58,7 +78,8 @@
     <div id="browserInspector" class="mb-8 p-4 rounded-lg border bg-blue-50 border-blue-200 text-blue-900 text-sm">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-3">
-          <span id="browserBadge" class="px-2.5 py-1 rounded-md text-xs font-bold bg-blue-600 text-white">Detectando Browser...</span>
+          <span id="browserBadge" class="px-2.5 py-1 rounded-md text-xs font-bold bg-blue-600 text-white">Detectando
+            Browser...</span>
           <span>Detected API Engine: <strong id="apiEngineText">Checking...</strong></span>
         </div>
         <span class="text-xs text-gray-500 font-mono" id="userAgentSnippet"></span>
@@ -72,22 +93,23 @@
         Seleccionar la vía de la empresa:
       </h2>
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <button id="btnSeleccionarUbicacion" 
-                onclick="handleSeleccionarUbicacion()"
-                class="btn-green text-white font-medium px-5 py-2.5 rounded-lg shadow-sm transition-colors text-sm shrink-0 flex items-center justify-center">
+        <button id="btnSeleccionarUbicacion" onclick="handleSeleccionarUbicacion()"
+          class="btn-green text-white font-medium px-5 py-2.5 rounded-lg shadow-sm transition-colors text-sm shrink-0 flex items-center justify-center">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
           </svg>
           Seleccionar ubicación
         </button>
-        <input type="text" 
-               id="rutaExpoWinInput" 
-               readonly 
-               value="C:\HolistorW\WHDatos\Steam"
-               class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-gray-50 text-sm font-mono text-gray-800 read-only:cursor-default focus:outline-none" />
+        <input type="text" id="rutaExpoWinInput"
+          oninput="actualPath = this.value; log('Path manually updated: ' + this.value);"
+          value=""
+          placeholder="Ej. C:\HolistorW\WHDatos\<vía> o seleccione carpeta"
+          class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm font-mono text-gray-800 focus:outline-none focus:ring-1 focus:ring-teal-500" />
       </div>
       <p class="text-xs text-gray-500 mt-2">
-        Atención: La ruta configurada debe coincidir con la vía asignada en Holistor Win (ej. <code>C:\HolistorW\WHDatos\&lt;vía&gt;</code>).
+        Atención: La ruta configurada debe coincidir con la vía asignada en Holistor Win (ej.
+        <code>C:\HolistorW\WHDatos\&lt;vía&gt;</code>).
       </p>
     </section>
 
@@ -97,12 +119,12 @@
         Definir equivalencias de datos generales:
       </h2>
       <div class="flex flex-wrap gap-3">
-        <button onclick="openTiposModal()" 
-                class="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
+        <button onclick="openTiposModal()"
+          class="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
           Tipos de Comprobantes
         </button>
-        <button onclick="openRetModal()" 
-                class="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
+        <button onclick="openRetModal()"
+          class="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
           Ret. / Perc. / Otros
         </button>
       </div>
@@ -117,12 +139,12 @@
         <div class="w-full sm:w-[200px]">
           <label class="block text-xs font-bold text-gray-700 mb-1">Desde</label>
           <input type="month" id="periodoDesde" value="2025-05" onchange="validatePeriodo()"
-                 class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500">
+            class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500">
         </div>
         <div class="w-full sm:w-[200px]">
           <label class="block text-xs font-bold text-gray-700 mb-1">Hasta</label>
           <input type="month" id="periodoHasta" value="2025-05" onchange="validatePeriodo()"
-                 class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500">
+            class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500">
         </div>
       </div>
       <p id="periodoErrorText" class="text-xs text-red-600 font-medium mt-2 hidden"></p>
@@ -130,11 +152,11 @@
 
     <!-- Sección 4: Botón Exportar -->
     <div class="mt-8 pt-6 border-t border-gray-200 flex items-center justify-between">
-      <button id="btnExportar" 
-              onclick="handleExportar()"
-              class="btn-teal text-white font-medium px-6 py-2.5 rounded-lg shadow-sm transition-colors text-sm flex items-center">
+      <button id="btnExportar" onclick="handleExportar()"
+        class="btn-teal text-white font-medium px-6 py-2.5 rounded-lg shadow-sm transition-colors text-sm flex items-center">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
         </svg>
         Exportar
       </button>
@@ -142,7 +164,8 @@
       <!-- Mode Force Switch for Testing -->
       <div class="flex items-center space-x-2 text-xs text-gray-500 bg-gray-50 p-2 rounded-lg border">
         <span>Simular Engine:</span>
-        <select id="engineOverride" onchange="detectBrowserCapabilities()" class="bg-white border rounded px-2 py-1 text-xs">
+        <select id="engineOverride" onchange="detectBrowserCapabilities()"
+          class="bg-white border rounded px-2 py-1 text-xs">
           <option value="auto">Auto (Detectar Browser)</option>
           <option value="filesystem">Forzar File System Access API (Chrome Direct)</option>
           <option value="zip">Forzar JSZip Fallback (Firefox/Safari)</option>
@@ -153,7 +176,8 @@
     <!-- Logs / Audit Console for Research Demo -->
     <div class="mt-8">
       <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Audit & Research Console Output</h3>
-      <pre id="consoleLog" class="bg-gray-900 text-green-400 p-4 rounded-lg text-xs font-mono h-40 overflow-y-auto leading-relaxed border border-gray-800">System Initialized. Click "Seleccionar ubicación" or "Exportar" to test export workflow...</pre>
+      <pre id="consoleLog"
+        class="bg-gray-900 text-green-400 p-4 rounded-lg text-xs font-mono h-40 overflow-y-auto leading-relaxed border border-gray-800">System Initialized. Click "Seleccionar ubicación" or "Exportar" to test export workflow...</pre>
     </div>
 
   </main>
@@ -162,7 +186,8 @@
   <div id="modalTipos" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
     <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 border border-gray-200 m-4">
       <h3 class="text-lg font-bold text-gray-900 mb-2">Tipos de Comprobantes</h3>
-      <p class="text-xs text-gray-600 mb-4">Completar con los códigos de comprobantes utilizados en Holistor Win y el tipo correspondiente:</p>
+      <p class="text-xs text-gray-600 mb-4">Completar con los códigos de comprobantes utilizados en Holistor Win y el
+        tipo correspondiente:</p>
       <div class="overflow-x-auto max-h-64 mb-6 border rounded-lg">
         <table class="w-full text-xs text-left text-gray-700">
           <thead class="bg-gray-50 uppercase text-gray-500 border-b">
@@ -177,21 +202,27 @@
             <tr class="border-b">
               <td class="p-3 font-mono">001</td>
               <td class="p-3">Factura A</td>
-              <td class="p-3"><input type="text" maxlength="2" value="FA" class="border rounded px-2 py-1 w-16 uppercase font-mono"></td>
-              <td class="p-3"><input type="text" maxlength="1" value="A" class="border rounded px-2 py-1 w-12 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="2" value="FA"
+                  class="border rounded px-2 py-1 w-16 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="1" value="A"
+                  class="border rounded px-2 py-1 w-12 uppercase font-mono"></td>
             </tr>
             <tr class="border-b">
               <td class="p-3 font-mono">006</td>
               <td class="p-3">Factura B</td>
-              <td class="p-3"><input type="text" maxlength="2" value="FB" class="border rounded px-2 py-1 w-16 uppercase font-mono"></td>
-              <td class="p-3"><input type="text" maxlength="1" value="B" class="border rounded px-2 py-1 w-12 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="2" value="FB"
+                  class="border rounded px-2 py-1 w-16 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="1" value="B"
+                  class="border rounded px-2 py-1 w-12 uppercase font-mono"></td>
             </tr>
           </tbody>
         </table>
       </div>
       <div class="flex justify-end space-x-3">
-        <button onclick="closeTiposModal()" class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-gray-50">Cancelar</button>
-        <button onclick="closeTiposModal(); log('Equivalencias de Tipos de Comprobantes guardadas.');" class="px-4 py-2 btn-teal text-white rounded-lg text-xs font-medium">Grabar relación</button>
+        <button onclick="closeTiposModal()"
+          class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-gray-50">Cancelar</button>
+        <button onclick="closeTiposModal(); log('Equivalencias de Tipos de Comprobantes guardadas.');"
+          class="px-4 py-2 btn-teal text-white rounded-lg text-xs font-medium">Grabar relación</button>
       </div>
     </div>
   </div>
@@ -200,7 +231,8 @@
   <div id="modalRet" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
     <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 border border-gray-200 m-4">
       <h3 class="text-lg font-bold text-gray-900 mb-2">Retenciones / Percepciones / Otros</h3>
-      <p class="text-xs text-gray-600 mb-4">Completar con los códigos de retenciones, percepciones, etc. utilizados en Holistor Win:</p>
+      <p class="text-xs text-gray-600 mb-4">Completar con los códigos de retenciones, percepciones, etc. utilizados en
+        Holistor Win:</p>
       <div class="overflow-x-auto max-h-64 mb-6 border rounded-lg">
         <table class="w-full text-xs text-left text-gray-700">
           <thead class="bg-gray-50 uppercase text-gray-500 border-b">
@@ -216,20 +248,22 @@
               <td class="p-3 font-mono">R-IVA</td>
               <td class="p-3">Retención IVA</td>
               <td class="p-3">Retención</td>
-              <td class="p-3"><input type="text" maxlength="4" value="RIVA" class="border rounded px-2 py-1 w-20 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="4" value="RIVA"
+                  class="border rounded px-2 py-1 w-20 uppercase font-mono"></td>
             </tr>
             <tr class="border-b">
               <td class="p-3 font-mono">P-IIBB</td>
               <td class="p-3">Percepción IIBB Bs As</td>
               <td class="p-3">Percepción</td>
-              <td class="p-3"><input type="text" maxlength="4" value="PIIB" class="border rounded px-2 py-1 w-20 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="4" value="PIIB"
+                  class="border rounded px-2 py-1 w-20 uppercase font-mono"></td>
             </tr>
           </tbody>
         </table>
       </div>
       <div class="flex justify-end space-x-3">
-        <button onclick="closeRetModal()" class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-gray-50">Cancelar</button>
-        <button onclick="closeRetModal(); log('Equivalencias de Retenciones/Percepciones guardadas.');" class="px-4 py-2 btn-teal text-white rounded-lg text-xs font-medium">Grabar relación</button>
+        <button onclick="closeRetModal()"
+          class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-gray-50">Cancelar</button>
       </div>
     </div>
   </div>
@@ -237,7 +271,7 @@
   <script>
     // System State
     let selectedDirectoryHandle = null;
-    let activePath = 'C:\\HolistorW\\WHDatos\\Steam';
+    let actualPath = '';
     let isChromiumFSA = false;
 
     function log(msg, type = 'info') {
@@ -254,7 +288,7 @@
       document.getElementById('userAgentSnippet').textContent = ua.slice(0, 45) + '...';
 
       const hasFSAPI = ('showDirectoryPicker' in window);
-      
+
       if (override === 'filesystem' || (override === 'auto' && hasFSAPI)) {
         isChromiumFSA = true;
         document.getElementById('browserBadge').textContent = 'Chromium Engine';
@@ -266,8 +300,6 @@
         isChromiumFSA = false;
         document.getElementById('browserBadge').textContent = 'Firefox / Safari Fallback';
         document.getElementById('browserBadge').className = 'px-2.5 py-1 rounded-md text-xs font-bold bg-amber-600 text-white';
-        document.getElementById('apiEngineText').textContent = 'JSZip Bundled Download Fallback';
-        document.getElementById('engineDesc').textContent = '⚠️ Browser ini (Firefox/Safari) tidak mendukung showDirectoryPicker(). Ekspor akan mendownload file bundel .ZIP.';
         log('Browser Engine set to: JSZip Bundled Download Fallback (Firefox/Safari)');
       }
     }
@@ -277,10 +309,10 @@
       if (isChromiumFSA && 'showDirectoryPicker' in window) {
         try {
           selectedDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-          const folderName = selectedDirectoryHandle.name || 'Steam';
-          activePath = `C:\\HolistorW\\WHDatos\\${folderName}`;
-          document.getElementById('rutaExpoWinInput').value = activePath;
-          log(`Folder selected via Direct Picker: "${folderName}" -> Formatted Path: ${activePath}`);
+          const folderName = selectedDirectoryHandle.name || 'CarpetaSeleccionada';
+          actualPath = folderName;
+          document.getElementById('rutaExpoWinInput').value = actualPath;
+          log(`Folder selected via Direct Picker: "${folderName}" -> Actual Path: ${actualPath}`);
         } catch (err) {
           if (err.name === 'AbortError') {
             log('User cancelled folder picker dialog.', 'warn');
@@ -298,10 +330,10 @@
           const files = e.target.files;
           if (files && files.length > 0) {
             const relativePath = files[0].webkitRelativePath || '';
-            const folderName = relativePath.split('/')[0] || 'Steam';
-            activePath = `C:\\HolistorW\\WHDatos\\${folderName}`;
-            document.getElementById('rutaExpoWinInput').value = activePath;
-            log(`Folder selected via webkitdirectory: "${folderName}" -> Formatted Path: ${activePath}`);
+            const folderName = relativePath.split('/')[0] || 'CarpetaSeleccionada';
+            actualPath = folderName;
+            document.getElementById('rutaExpoWinInput').value = actualPath;
+            log(`Folder selected via webkitdirectory: "${folderName}" -> Actual Path: ${actualPath}`);
           }
         };
         input.click();
@@ -347,7 +379,7 @@
     }
 
     // Dummy CSV Generators matching Sprint 13 spec
-    function generateDummyCSVs(víaName) {
+    function generateDummyCSVs(viaName) {
       return [
         {
           filename: 'IVREGESP.csv',
@@ -371,10 +403,10 @@
     async function handleExportar() {
       if (!validatePeriodo()) return;
 
-      const víaName = activePath.split('\\').pop() || 'Steam';
-      const files = generateDummyCSVs(víaName);
+      const viaName = actualPath.split(/[/\\]/).pop() || 'Steam';
+      const files = generateDummyCSVs(viaName);
 
-      log(`Initiating export process for Vía "${víaName}" (Period: ${document.getElementById('periodoDesde').value} to ${document.getElementById('periodoHasta').value})...`);
+      log(`Initiating export process for Vía "${viaName}" (Period: ${document.getElementById('periodoDesde').value} to ${document.getElementById('periodoHasta').value})...`);
 
       if (isChromiumFSA && selectedDirectoryHandle) {
         try {
@@ -389,32 +421,32 @@
           alert(`✅ Ekspor Berhasil!\n\n${files.length} file CSV Holistor Win telah ditulis langsung ke folder terpilih.`);
         } catch (err) {
           log(`Direct Write failed: ${err.message}. Falling back to ZIP Download...`, 'warn');
-          await triggerZipDownload(víaName, files);
+          await triggerZipDownload(viaName, files);
         }
       } else {
         log('Executing Fallback Engine: Packaging CSVs into JSZip archive (Firefox/Safari Compatible)...');
-        await triggerZipDownload(víaName, files);
+        await triggerZipDownload(viaName, files);
       }
     }
 
-    async function triggerZipDownload(víaName, files) {
+    async function triggerZipDownload(viaName, files) {
       const zip = new JSZip();
-      const folder = zip.folder(víaName);
-      
+      const folder = zip.folder(viaName);
+
       files.forEach(f => folder.file(f.filename, f.content));
 
-      log(`Compressing ${files.length} CSV files into "${víaName}.zip"...`);
+      log(`Compressing ${files.length} CSV files into "${viaName}.zip"...`);
       const blob = await zip.generateAsync({ type: 'blob' });
 
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = `Holistor_Export_${víaName}.zip`;
+      link.download = `Holistor_Export_${viaName}.zip`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
-      log(`✅ Fallback Download Complete: Archivo "Holistor_Export_${víaName}.zip" di-download.`);
-      alert(`✅ Ekspor Berhasil (Mode Fallback Firefox/Safari)!\n\nFile CSV telah dibungkus ke dalam "Holistor_Export_${víaName}.zip" dan di-download.`);
+      log(`✅ Fallback Download Complete: Archivo "Holistor_Export_${viaName}.zip" di-download.`);
+      alert(`✅ Ekspor Berhasil (Mode Fallback Firefox/Safari)!\n\nFile CSV telah dibungkus ke dalam "Holistor_Export_${viaName}.zip" dan di-download.`);
     }
 
     // Modal Control Functions
@@ -427,4 +459,5 @@
     detectBrowserCapabilities();
   </script>
 </body>
+
 </html>
