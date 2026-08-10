@@ -109,14 +109,15 @@
         </button>
         <input type="text" 
                id="rutaExpoWinInput" 
-               readonly 
+               oninput="handleManualPathInput(this.value)"
                value=""
-               class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-gray-50 text-sm font-mono text-gray-800 read-only:cursor-default focus:outline-none" />
+               placeholder="Ej. C:\HolistorW\WHDatos\<vía> o seleccione carpeta"
+               class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm font-mono text-gray-800 focus:outline-none focus:ring-1 focus:ring-teal-500" />
       </div>
       <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
         <span id="pathLabelOS">Ruta visual adaptada al sistema operativo activo.</span>
         <span id="backendCanonicalBadge" class="font-mono text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
-          Target Holistor Win DB: C:\HolistorW\WHDatos\Steam
+          Ruta guardada en DB: (Sin configurar)
         </span>
       </div>
     </section>
@@ -282,7 +283,7 @@
   <script>
     // State
     let selectedDirectoryHandle = null;
-    let currentFolderName = 'Steam';
+    let actualPath = '';
     let isMac = true;
     let isChromiumFSA = false;
 
@@ -312,15 +313,20 @@
         document.getElementById('pathLabelOS').textContent = 'Ruta visual adaptada para Windows OS';
       }
 
-      // Feature A: OS-Aware Visual Path Update
-      const visualPath = isMac 
-        ? `/Users/dendyaditya/Desktop/${currentFolderName}`
-        : `C:\\HolistorW\\WHDatos\\${currentFolderName}`;
+      document.getElementById('rutaExpoWinInput').value = actualPath;
+      document.getElementById('backendCanonicalBadge').textContent = actualPath 
+        ? `Ruta guardada en DB: ${actualPath}` 
+        : `Ruta guardada en DB: (Sin configurar)`;
 
-      document.getElementById('rutaExpoWinInput').value = visualPath;
-      document.getElementById('backendCanonicalBadge').textContent = `Target Holistor Win DB: C:\\HolistorW\\WHDatos\\${currentFolderName}`;
+      log(`OS Display updated -> Mode: ${isMac ? 'macOS' : 'Windows'} | Actual Path: "${actualPath || '(Vacio)'}"`);
+    }
 
-      log(`OS Display updated -> Mode: ${isMac ? 'macOS' : 'Windows'} | Visual Path: "${visualPath}"`);
+    function handleManualPathInput(val) {
+      if (val && val.trim()) {
+        actualPath = val.trim();
+        document.getElementById('backendCanonicalBadge').textContent = `Ruta guardada en DB: ${actualPath}`;
+        log(`Path updated manually by user: "${actualPath}"`);
+      }
     }
 
     function detectBrowserEngine() {
@@ -343,9 +349,12 @@
       if (isChromiumFSA && 'showDirectoryPicker' in window) {
         try {
           selectedDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-          currentFolderName = selectedDirectoryHandle.name || 'Steam';
+          const folderName = selectedDirectoryHandle.name || 'WHDatos';
+          if (!actualPath.includes(folderName)) {
+            actualPath = `${actualPath}/${folderName}`;
+          }
           updateOSAndPathDisplay();
-          log(`Folder selected via Direct Picker: "${currentFolderName}"`);
+          log(`Folder selected via Direct Picker: "${folderName}" -> Actual Path: "${actualPath}"`);
         } catch (err) {
           if (err.name === 'AbortError') {
             log('User cancelled folder picker dialog.', 'warn');
@@ -362,9 +371,12 @@
           const files = e.target.files;
           if (files && files.length > 0) {
             const relativePath = files[0].webkitRelativePath || '';
-            currentFolderName = relativePath.split('/')[0] || 'Steam';
+            const folderName = relativePath.split('/')[0] || 'WHDatos';
+            if (!actualPath.includes(folderName)) {
+              actualPath = `${actualPath}/${folderName}`;
+            }
             updateOSAndPathDisplay();
-            log(`Folder selected via webkitdirectory: "${currentFolderName}"`);
+            log(`Folder selected via webkitdirectory: "${folderName}" -> Actual Path: "${actualPath}"`);
           }
         };
         input.click();
