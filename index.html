@@ -104,13 +104,18 @@
         <input type="text" id="rutaExpoWinInput"
           oninput="actualPath = this.value; log('Path manually updated: ' + this.value);"
           value=""
-          placeholder="Ej. C:\HolistorW\WHDatos\<vía> o seleccione carpeta"
+          placeholder="Ej. C:\HolistorW\WHDatos\<vía> o D:\MisDatos\<vía>"
           class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm font-mono text-gray-800 focus:outline-none focus:ring-1 focus:ring-teal-500" />
       </div>
-      <p class="text-xs text-gray-500 mt-2">
-        Atención: La ruta configurada debe coincidir con la vía asignada en Holistor Win (ej.
-        <code>C:\HolistorW\WHDatos\&lt;vía&gt;</code>).
-      </p>
+      <div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500">
+        <span>Atención: La ruta configurada debe coincidir con la vía asignada en Holistor Win.</span>
+        <div class="flex items-center space-x-2">
+          <span class="font-semibold text-gray-400">Pindah Drive Test:</span>
+          <button onclick="setPathPreset('C:\\HolistorW\\WHDatos\\Empresa01')" class="px-2 py-0.5 rounded bg-gray-100 hover:bg-gray-200 border text-gray-700 font-mono">Drive C:\</button>
+          <button onclick="setPathPreset('D:\\MisDatos\\Holistor\\Empresa02')" class="px-2 py-0.5 rounded bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 font-mono">Drive D:\</button>
+          <button onclick="setPathPreset('/Volumes/ExternalDrive/WHDatos/Empresa03')" class="px-2 py-0.5 rounded bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-mono">Mac Volume</button>
+        </div>
+      </div>
     </section>
 
     <!-- Sección 2: Definir equivalencias de datos generales -->
@@ -280,6 +285,12 @@
       const prefix = type === 'error' ? '❌ [ERROR]' : type === 'warn' ? '⚠️ [WARN]' : 'ℹ️ [INFO]';
       consoleEl.textContent += `\n[${time}] ${prefix} ${msg}`;
       consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function setPathPreset(presetPath) {
+      actualPath = presetPath;
+      document.getElementById('rutaExpoWinInput').value = actualPath;
+      log(`Drive Switch Preset selected -> Actual Path 100% Replaced: "${actualPath}"`);
     }
 
     function detectBrowserCapabilities() {
