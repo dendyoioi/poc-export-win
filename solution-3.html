@@ -115,15 +115,15 @@
         </button>
         <input type="text" 
                id="rutaExpoWinInput" 
-               oninput="customPath = this.value; currentFolderName = this.value.split(/[/\\]/).pop() || 'Steam'; document.getElementById('backendCanonicalBadge').textContent = 'Target Holistor Win DB: C:\\HolistorW\\WHDatos\\' + currentFolderName; log('Path manually updated: ' + this.value);"
+               oninput="handleManualPathInput(this.value)"
                value=""
                placeholder="/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos"
                class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm font-mono text-gray-800 focus:outline-none focus:ring-1 focus:ring-teal-500" />
       </div>
       <div class="mt-2 flex flex-wrap items-center justify-between text-xs text-gray-500">
-        <span id="pathLabelOS">Jalun fisik asli yang didapatkan melalui Native OS Folder Picker.</span>
+        <span id="pathLabelOS">Path fisik asli yang diperoleh via Tauri Native Dialog Picker (dialog.showOpenDialog).</span>
         <span id="backendCanonicalBadge" class="font-mono text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
-          Target Holistor Win DB: C:\HolistorW\WHDatos\Steam
+          Ruta guardada en DB: /Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos
         </span>
       </div>
     </section>
@@ -349,32 +349,29 @@
       }
     }
 
-    let customPath = null;
-
     function updateOSAndPathDisplay() {
       const osOverride = document.getElementById('osSimulator').value;
       const ua = navigator.userAgent.toLowerCase();
 
       if (osOverride === 'mac' || (osOverride === 'auto' && (ua.includes('mac') || ua.includes('os x')))) {
         isMac = true;
-        document.getElementById('pathLabelOS').textContent = 'Path fisik macOS yang diperoleh via Tauri Native Dialog Picker (dialog.showOpenDialog)';
+        document.getElementById('pathLabelOS').textContent = 'Path fisik macOS yang dipilih pengguna (via Tauri Native Dialog Picker).';
       } else {
         isMac = false;
-        document.getElementById('pathLabelOS').textContent = 'Path fisik Windows OS yang diperoleh via Tauri Native Dialog Picker';
+        document.getElementById('pathLabelOS').textContent = 'Path fisik Windows OS yang dipilih pengguna (via Tauri Native Dialog Picker).';
       }
 
-      if (customPath) {
-        document.getElementById('rutaExpoWinInput').value = customPath;
-      } else {
-        const visualPath = isMac 
-          ? `/Users/dendyaditya/Desktop/${currentFolderName}`
-          : `C:\\HolistorW\\WHDatos\\${currentFolderName}`;
-        document.getElementById('rutaExpoWinInput').value = visualPath;
-      }
+      document.getElementById('rutaExpoWinInput').value = actualPath;
+      document.getElementById('backendCanonicalBadge').textContent = `Ruta guardada en DB: ${actualPath}`;
+      log(`OS Context updated -> Mode: ${isMac ? 'macOS' : 'Windows'} | Actual Path: "${actualPath}"`);
+    }
 
-      const viaName = currentFolderName || 'Steam';
-      document.getElementById('backendCanonicalBadge').textContent = `Target Holistor Win DB: C:\\HolistorW\\WHDatos\\${viaName}`;
-      log(`OS Context updated -> Mode: ${isMac ? 'macOS' : 'Windows'} | Active Path: "${document.getElementById('rutaExpoWinInput').value}"`);
+    function handleManualPathInput(val) {
+      if (val && val.trim()) {
+        actualPath = val.trim();
+        document.getElementById('backendCanonicalBadge').textContent = `Ruta guardada en DB: ${actualPath}`;
+        log(`Path updated manually by user: "${actualPath}"`);
+      }
     }
 
     async function handleSeleccionarUbicacion() {
@@ -390,14 +387,21 @@
         try {
           selectedDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
           const pickedName = selectedDirectoryHandle.name || 'WHDatos';
-          currentFolderName = pickedName;
           
-          // Dynamically construct path or allow user to adjust
-          const baseDir = '/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW';
-          customPath = `${baseDir}/${pickedName}`;
-          
+          // Allow user to confirm/adjust full absolute path for PoC web simulation
+          const chosenPath = prompt(
+            'Tauri Native Folder Picker (dialog.showOpenDialog)\n\nFolder terpilih: "' + pickedName + '"\nKonfirmasi/sesuaikan path fisik lengkap di komputer Anda:',
+            actualPath.includes(pickedName) ? actualPath : `${actualPath}/${pickedName}`
+          );
+
+          if (chosenPath && chosenPath.trim()) {
+            actualPath = chosenPath.trim();
+          } else {
+            actualPath = `${actualPath}/${pickedName}`;
+          }
+
           updateOSAndPathDisplay();
-          log(`Native OS Folder Picker selected: "${pickedName}" -> Path: "${customPath}"`);
+          log(`Native OS Folder Picker returned actual path: "${actualPath}"`);
         } catch (err) {
           if (err.name === 'AbortError') {
             log('User cancelled folder picker dialog.', 'warn');
@@ -413,11 +417,9 @@
           if (files && files.length > 0) {
             const relativePath = files[0].webkitRelativePath || '';
             const pickedName = relativePath.split('/')[0] || 'WHDatos';
-            currentFolderName = pickedName;
-            const baseDir = '/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW';
-            customPath = `${baseDir}/${pickedName}`;
+            actualPath = `/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/${pickedName}`;
             updateOSAndPathDisplay();
-            log(`Native OS Folder Picker selected: "${pickedName}" -> Path: "${customPath}"`);
+            log(`Native OS Folder Picker returned actual path: "${actualPath}"`);
           }
         };
         input.click();
