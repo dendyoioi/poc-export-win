@@ -404,23 +404,16 @@
       if ('showDirectoryPicker' in window) {
         try {
           selectedDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-          const pickedName = selectedDirectoryHandle.name || '';
+          const pickedName = selectedDirectoryHandle.name || 'EjemploDA';
           
-          // Suggest exact path structure for PoC web simulation
-          const suggestedPath = actualPath.trim() !== '' 
-            ? actualPath 
-            : `/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos/${pickedName}`;
+          // Automatically build complete path without asking user to type again
+          const basePath = isMac 
+            ? '/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos'
+            : 'C:\\HolistorW\\WHDatos';
 
-          const chosenPath = prompt(
-            `Tauri Native Dialog (dialog.showOpenDialog)\n\nFolder yang Anda pilih di Finder/Explorer: "${pickedName}"\n\nMasukkan/konfirmasi PATH FISIK LENGKAP di komputer Anda (misal C:\\docA\\DocB\\DocC atau path Mac):`,
-            suggestedPath
-          );
-
-          if (chosenPath && chosenPath.trim()) {
-            actualPath = chosenPath.trim();
-            updateOSAndPathDisplay();
-            log(`Native OS Folder Picker set actual path: "${actualPath}"`);
-          }
+          actualPath = `${basePath}/${pickedName}`;
+          updateOSAndPathDisplay();
+          log(`Native OS Folder Picker automatically filled path: "${actualPath}"`);
         } catch (err) {
           if (err.name === 'AbortError') {
             log('User cancelled folder picker dialog.', 'warn');
@@ -435,22 +428,15 @@
           const files = e.target.files;
           if (files && files.length > 0) {
             const relativePath = files[0].webkitRelativePath || '';
-            const pickedName = relativePath.split('/')[0] || '';
+            const pickedName = relativePath.split('/')[0] || 'EjemploDA';
             
-            const suggestedPath = actualPath.trim() !== '' 
-              ? actualPath 
-              : `/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos/${pickedName}`;
+            const basePath = isMac 
+              ? '/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos'
+              : 'C:\\HolistorW\\WHDatos';
 
-            const chosenPath = prompt(
-              `Tauri Native Dialog (dialog.showOpenDialog)\n\nFolder terpilih: "${pickedName}"\n\nMasukkan/konfirmasi PATH FISIK LENGKAP di komputer Anda:`,
-              suggestedPath
-            );
-
-            if (chosenPath && chosenPath.trim()) {
-              actualPath = chosenPath.trim();
-              updateOSAndPathDisplay();
-              log(`Native OS Folder Picker set actual path: "${actualPath}"`);
-            }
+            actualPath = `${basePath}/${pickedName}`;
+            updateOSAndPathDisplay();
+            log(`Native OS Folder Picker automatically filled path: "${actualPath}"`);
           }
         };
         input.click();
