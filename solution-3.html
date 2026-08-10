@@ -503,14 +503,20 @@
     async function handleExportar() {
       if (!validatePeriodo()) return;
 
+      const targetPath = document.getElementById('rutaExpoWinInput').value.trim() || actualPath.trim();
+      
+      if (!targetPath) {
+        log('Export blocked: Target path is empty.', 'warn');
+        alert('⚠️ Por favor seleccione la ubicación de la carpeta (vía de la empresa) antes de realizar el export.');
+        return;
+      }
+
       const connected = await checkHelperHealth();
       if (!connected && !isHelperConnected) {
         document.getElementById('modalOffline').classList.remove('hidden');
         return;
       }
 
-      const targetPath = document.getElementById('rutaExpoWinInput').value;
-      const víaName = currentFolderName || 'Steam';
       const files = generateDummyCSVs();
 
       log(`Sending HTTP POST to http://127.0.0.1:48123/v1/export ...`);
@@ -529,7 +535,7 @@
           log(`✅ HELPER SUCCESS (200 OK): ${result.message}`);
           result.writtenFiles.forEach(fp => log(`  [DISK WRITE SUCCESS] -> ${fp}`));
 
-          alert(`🎉 EKSPOR BERHASIL TERULIS LANGSUING KE DISK MAC!\n\nTarget Folder: ${targetPath}\n\nSemua 4 file CSV (IVREGESP.csv, IVOTRDGI.csv, MOVIVAC.csv, IVDETPER.csv) telah ditulis fisik secara langsung ke dalam folder tujuan di Mac Anda tanpa melalui folder Downloads!`);
+          alert(`🎉 EKSPOR DUMMY CSV BERHASIL!\n\nTarget Folder: ${targetPath}\n\nSemua 4 file CSV (IVREGESP.csv, IVOTRDGI.csv, MOVIVAC.csv, IVDETPER.csv) telah berhasil ditulis fisik ke disk!`);
         } else {
           throw new Error(result.error || 'Server error');
         }
