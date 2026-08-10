@@ -393,68 +393,45 @@
     }
 
     async function handleSeleccionarUbicacion() {
-      log('User triggered Native OS Folder Picker via Tauri/Electron Bridge...');
-      if (!isHelperConnected) {
-        document.getElementById('modalOffline').classList.remove('hidden');
+      log('User clicked "Seleccionar ubicación"...');
+      
+      // 1. If running inside Native Desktop Tauri App (Production):
+      if (window.__TAURI__ && window.__TAURI__.dialog) {
+        try {
+          const selectedPath = await window.__TAURI__.dialog.open({ directory: true });
+          if (selectedPath) {
+            actualPath = selectedPath;
+            updateOSAndPathDisplay();
+            log(`Tauri Native Dialog returned pure actual path: "${actualPath}"`);
+          }
+        } catch (err) {
+          log(`Tauri dialog error: ${err.message}`, 'error');
+        }
         return;
       }
 
-      log('Invoking Native OS Folder Dialog Window...');
-      
-      if ('showDirectoryPicker' in window) {
+      // 2. If Helper Agent is active (Local Server on 127.0.0.1:48123):
+      if (isHelperConnected) {
+        log('Invoking Native OS Folder Picker via Local Helper Agent...');
         try {
-          selectedDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-          const folderName = selectedDirectoryHandle.name || '';
-          
-          // Suggest exact default raw path for Web PoC simulation
-          const defaultRawPath = actualPath.trim() !== '' 
-            ? actualPath 
-            : `/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos/${folderName}`;
-
-          const confirmedRawPath = prompt(
-            `Tauri Native OS Dialog (dialog.showOpenDialog)\n\nFolder terpilih: "${folderName}"\n\nKonfirmasi/masukkan RAW ABSOLUTE PATH fisik lengkap di komputer Anda:`,
-            defaultRawPath
-          );
-
-          if (confirmedRawPath && confirmedRawPath.trim()) {
-            actualPath = confirmedRawPath.trim();
+          const resp = await fetch('http://127.0.0.1:48123/v1/pick-folder');
+          const data = await resp.json();
+          if (resp.ok && data.success && data.rawPath) {
+            actualPath = data.rawPath;
             updateOSAndPathDisplay();
-            log(`Raw Absolute Path confirmed: "${actualPath}"`);
+            log(`Native OS Folder Picker returned 100% Raw Actual Path: "${actualPath}"`);
+            return;
+          } else if (data.error === 'Cancelled') {
+            log('User cancelled Native OS folder picker dialog.', 'warn');
+            return;
           }
         } catch (err) {
-          if (err.name === 'AbortError') {
-            log('User cancelled folder picker dialog.', 'warn');
-          }
+          log(`Local Helper folder picker fallback: ${err.message}`, 'warn');
         }
-      } else {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.setAttribute('webkitdirectory', '');
-        input.setAttribute('directory', '');
-        input.onchange = (e) => {
-          const files = e.target.files;
-          if (files && files.length > 0) {
-            const relativePath = files[0].webkitRelativePath || '';
-            const folderName = relativePath.split('/')[0] || '';
-            
-            const defaultRawPath = actualPath.trim() !== '' 
-              ? actualPath 
-              : `/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos/${folderName}`;
-
-            const confirmedRawPath = prompt(
-              `Tauri Native OS Dialog (dialog.showOpenDialog)\n\nFolder terpilih: "${folderName}"\n\nKonfirmasi/masukkan RAW ABSOLUTE PATH fisik lengkap di komputer Anda:`,
-              defaultRawPath
-            );
-
-            if (confirmedRawPath && confirmedRawPath.trim()) {
-              actualPath = confirmedRawPath.trim();
-              updateOSAndPathDisplay();
-              log(`Raw Absolute Path confirmed: "${actualPath}"`);
-            }
-          }
-        };
-        input.click();
       }
+
+      // 3. Fallback if Helper Agent is offline
+      document.getElementById('modalOffline').classList.remove('hidden');
     }
 
     function validatePeriodo() {
