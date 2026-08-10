@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { exec } = require('child_process');
 
 const PORT = 48123;
 
@@ -20,6 +21,35 @@ const server = http.createServer((req, res) => {
   if (req.method === 'GET' && req.url === '/v1/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'ok', helper: 'Holistor Local Helper Service', port: PORT }));
+    return;
+  }
+
+  // Native OS Folder Picker endpoint for web demo
+  if (req.method === 'GET' && req.url === '/v1/pick-folder') {
+    console.log(`\n[LOCAL HELPER] Invoking Native OS Folder Picker Dialog...`);
+    const isWin = process.platform === 'win32';
+    const cmd = isWin
+      ? `powershell -Command "Add-Type -AssemblyName System.Windows.Forms; $f = New-Object System.Windows.Forms.FolderBrowserDialog; if ($f.ShowDialog() -eq 'OK') { Write-Output $f.SelectedPath }"`
+      : `osascript -e 'POSIX path of (choose folder with prompt "Seleccionar ubicación de la vía de la empresa:")'`;
+
+    exec(cmd, (err, stdout, stderr) => {
+      if (err || !stdout || !stdout.trim()) {
+        console.log(`[LOCAL HELPER] Folder selection cancelled or empty.`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: 'Cancelled' }));
+        return;
+      }
+
+      let rawPath = stdout.trim();
+      // Remove trailing slash if present for clean display
+      if (rawPath.length > 1 && (rawPath.endsWith('/') || rawPath.endsWith('\\'))) {
+        rawPath = rawPath.slice(0, -1);
+      }
+
+      console.log(`[LOCAL HELPER] Native OS Folder Picker returned Raw Absolute Path: "${rawPath}"`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, rawPath }));
+    });
     return;
   }
 
