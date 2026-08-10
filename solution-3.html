@@ -117,13 +117,21 @@
                id="rutaExpoWinInput" 
                oninput="handleManualPathInput(this.value)"
                value=""
-               placeholder="/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos"
+               placeholder="Ej. C:\HolistorW\WHDatos\<vía> o D:\MisDatos\<vía>"
                class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm font-mono text-gray-800 focus:outline-none focus:ring-1 focus:ring-teal-500" />
       </div>
-      <div class="mt-2 flex flex-wrap items-center justify-between text-xs text-gray-500">
+      <div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500">
         <span id="pathLabelOS">Path fisik asli yang diperoleh via Tauri Native Dialog Picker (dialog.showOpenDialog).</span>
+        <div class="flex items-center space-x-2">
+          <span class="font-semibold text-gray-400">Pindah Drive Test:</span>
+          <button onclick="setPathPreset('C:\\HolistorW\\WHDatos\\Empresa01')" class="px-2 py-0.5 rounded bg-gray-100 hover:bg-gray-200 border text-gray-700 font-mono">Drive C:\</button>
+          <button onclick="setPathPreset('D:\\MisDatos\\Holistor\\Empresa02')" class="px-2 py-0.5 rounded bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 font-mono">Drive D:\</button>
+          <button onclick="setPathPreset('/Volumes/ExternalDrive/WHDatos/Empresa03')" class="px-2 py-0.5 rounded bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-mono">Mac Volume</button>
+        </div>
+      </div>
+      <div class="mt-2 flex items-center justify-between text-xs">
         <span id="backendCanonicalBadge" class="font-mono text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
-          Ruta guardada en DB: /Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos
+          Ruta guardada en DB: (Sin configurar)
         </span>
       </div>
     </section>
@@ -314,7 +322,8 @@
 
   <script>
     // State
-    let currentFolderName = 'Steam';
+    let selectedDirectoryHandle = null;
+    let actualPath = '';
     let isMac = true;
     let isHelperConnected = true;
 
@@ -362,8 +371,11 @@
       }
 
       document.getElementById('rutaExpoWinInput').value = actualPath;
-      document.getElementById('backendCanonicalBadge').textContent = `Ruta guardada en DB: ${actualPath}`;
-      log(`OS Context updated -> Mode: ${isMac ? 'macOS' : 'Windows'} | Actual Path: "${actualPath}"`);
+      document.getElementById('backendCanonicalBadge').textContent = actualPath
+        ? `Ruta guardada en DB: ${actualPath}`
+        : `Ruta guardada en DB: (Sin configurar)`;
+
+      log(`OS Context updated -> Mode: ${isMac ? 'macOS' : 'Windows'} | Actual Path: "${actualPath || '(Vacio)'}"`);
     }
 
     function handleManualPathInput(val) {
@@ -372,6 +384,12 @@
         document.getElementById('backendCanonicalBadge').textContent = `Ruta guardada en DB: ${actualPath}`;
         log(`Path updated manually by user: "${actualPath}"`);
       }
+    }
+
+    function setPathPreset(presetPath) {
+      actualPath = presetPath;
+      updateOSAndPathDisplay();
+      log(`Drive Switch Preset selected -> Actual Path 100% Replaced: "${actualPath}"`);
     }
 
     async function handleSeleccionarUbicacion() {
@@ -386,22 +404,23 @@
       if ('showDirectoryPicker' in window) {
         try {
           selectedDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-          const pickedName = selectedDirectoryHandle.name || 'WHDatos';
+          const pickedName = selectedDirectoryHandle.name || '';
           
-          // Allow user to confirm/adjust full absolute path for PoC web simulation
+          // Suggest exact path structure for PoC web simulation
+          const suggestedPath = actualPath.trim() !== '' 
+            ? actualPath 
+            : `/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos/${pickedName}`;
+
           const chosenPath = prompt(
-            'Tauri Native Folder Picker (dialog.showOpenDialog)\n\nFolder terpilih: "' + pickedName + '"\nKonfirmasi/sesuaikan path fisik lengkap di komputer Anda:',
-            actualPath.includes(pickedName) ? actualPath : `${actualPath}/${pickedName}`
+            `Tauri Native Dialog (dialog.showOpenDialog)\n\nFolder yang Anda pilih di Finder/Explorer: "${pickedName}"\n\nMasukkan/konfirmasi PATH FISIK LENGKAP di komputer Anda (misal C:\\docA\\DocB\\DocC atau path Mac):`,
+            suggestedPath
           );
 
           if (chosenPath && chosenPath.trim()) {
             actualPath = chosenPath.trim();
-          } else {
-            actualPath = `${actualPath}/${pickedName}`;
+            updateOSAndPathDisplay();
+            log(`Native OS Folder Picker set actual path: "${actualPath}"`);
           }
-
-          updateOSAndPathDisplay();
-          log(`Native OS Folder Picker returned actual path: "${actualPath}"`);
         } catch (err) {
           if (err.name === 'AbortError') {
             log('User cancelled folder picker dialog.', 'warn');
@@ -416,10 +435,22 @@
           const files = e.target.files;
           if (files && files.length > 0) {
             const relativePath = files[0].webkitRelativePath || '';
-            const pickedName = relativePath.split('/')[0] || 'WHDatos';
-            actualPath = `/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/${pickedName}`;
-            updateOSAndPathDisplay();
-            log(`Native OS Folder Picker returned actual path: "${actualPath}"`);
+            const pickedName = relativePath.split('/')[0] || '';
+            
+            const suggestedPath = actualPath.trim() !== '' 
+              ? actualPath 
+              : `/Users/dendyaditya/Documents/Holistor Analyst/Sprint 13/HolistorW/WHDatos/${pickedName}`;
+
+            const chosenPath = prompt(
+              `Tauri Native Dialog (dialog.showOpenDialog)\n\nFolder terpilih: "${pickedName}"\n\nMasukkan/konfirmasi PATH FISIK LENGKAP di komputer Anda:`,
+              suggestedPath
+            );
+
+            if (chosenPath && chosenPath.trim()) {
+              actualPath = chosenPath.trim();
+              updateOSAndPathDisplay();
+              log(`Native OS Folder Picker set actual path: "${actualPath}"`);
+            }
           }
         };
         input.click();
