@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exportar a Holistor Win - Solución 1 (Actual Path & Read-Only Input)</title>
+  <title>Exportar a Holistor Win - Producción Limpia (Solución 1 Pure Real Path)</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- JSZip CDN for ZIP bundling fallback -->
@@ -49,19 +49,10 @@
   <!-- Main Container -->
   <main class="max-w-4xl mx-auto my-8 bg-white rounded-xl shadow-md p-8 border border-gray-200">
     
-    <!-- Title Bar with Solution 1 Engine Badge -->
-    <div class="flex flex-wrap items-center justify-between border-b pb-4 mb-6">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900">Exportar a Holistor Win</h1>
-        <p class="text-xs text-gray-500 mt-1">Solución 1: Ruta de Exportación con Read-Only Field & Persistencia de Ubicación.</p>
-      </div>
-
-      <!-- Engine Badge -->
-      <div class="mt-2 sm:mt-0 flex items-center space-x-2">
-        <span id="osBadgeTag" class="text-xs font-mono bg-purple-100 text-purple-900 px-3 py-1.5 rounded-full border border-purple-300 font-bold flex items-center">
-          Detectando OS...
-        </span>
-      </div>
+    <!-- Title Bar -->
+    <div class="border-b pb-4 mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Exportar a Holistor Win</h1>
+      <p class="text-xs text-gray-500 mt-1">Exportación masiva de datos contables e impositivos al formato de archivos de Holistor Win.</p>
     </div>
 
     <!-- Sección 1: Seleccionar la vía de la empresa -->
@@ -79,26 +70,18 @@
           Seleccionar ubicación
         </button>
         
-        <!-- Field Teks Ruta de Exportación: READ-ONLY (Tidak dapat diketik manual) -->
+        <!-- Field Teks Ruta de Exportación: READ-ONLY (Refleja MURNI nama carpeta yang diklik) -->
         <input type="text" 
                id="rutaExpoWinInput" 
                readonly
                value=""
-               placeholder="Cargando ruta de exportación asignada..."
+               placeholder="Ninguna carpeta seleccionada"
                class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-gray-100 text-sm font-mono text-gray-800 cursor-not-allowed select-none focus:outline-none" />
       </div>
       
-      <!-- Indicator Status Path & Preset Simulations -->
-      <div class="mt-3 flex flex-wrap items-center justify-between text-xs gap-2">
-        <span id="canonicalPathBadge" class="font-mono text-purple-900 bg-purple-50 px-2.5 py-1 rounded border border-purple-200">
-          Ruta Guardada: <strong>(Cargando...)</strong>
-        </span>
-        <div class="flex items-center space-x-2 text-gray-500">
-          <span>Simular OS Preset:</span>
-          <button onclick="setPathPreset('mac')" class="px-2 py-0.5 rounded bg-purple-100 hover:bg-purple-200 border border-purple-300 text-purple-800 font-mono text-[11px]">macOS Root</button>
-          <button onclick="setPathPreset('win')" class="px-2 py-0.5 rounded bg-blue-100 hover:bg-blue-200 border border-blue-300 text-blue-800 font-mono text-[11px]">Windows C:\</button>
-        </div>
-      </div>
+      <p class="mt-2 text-xs text-gray-500">
+        Ruta física absoluta de la carpeta en la computadora cliente donde se encuentra instalada la empresa de Holistor Win.
+      </p>
     </section>
 
     <!-- Sección 2: Definir equivalencias de datos generales -->
@@ -232,10 +215,9 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'holistor_export_path_v1';
+    const STORAGE_KEY = 'holistor_export_real_path_v3';
     let selectedDirectoryHandle = null;
     let actualPath = '';
-    let isMac = false;
 
     function showStatus(message, isSuccess = true) {
       const alertEl = document.getElementById('statusAlert');
@@ -246,55 +228,13 @@
       alertEl.classList.remove('hidden');
     }
 
-    function updateCanonicalBadge() {
-      const badge = document.getElementById('canonicalPathBadge');
-      badge.innerHTML = `Ruta Guardada (${isMac ? 'macOS' : 'Windows'}): <strong>${actualPath || '(Sin configurar)'}</strong>`;
-    }
-
-    // ON SCREEN LOAD: AUTO-LOAD PREVIOUSLY STORED PATH OR RESOLVE OS DEFAULT ROOT PATH
+    // ON SCREEN LOAD: LOAD STORED PATH
     function loadScreenInitialPath() {
-      const ua = navigator.userAgent.toLowerCase();
-      const platform = navigator.platform.toLowerCase();
-      const osBadge = document.getElementById('osBadgeTag');
-
-      if (platform.includes('mac') || ua.includes('mac') || ua.includes('os x')) {
-        isMac = true;
-        osBadge.innerHTML = `💻 Sistema Operativo: <strong>macOS</strong>`;
-        osBadge.className = 'text-xs font-mono bg-purple-100 text-purple-900 px-3 py-1.5 rounded-full border border-purple-300 font-bold flex items-center';
-      } else {
-        isMac = false;
-        osBadge.innerHTML = `🪟 Sistema Operativo: <strong>Windows OS</strong>`;
-        osBadge.className = 'text-xs font-mono bg-blue-100 text-blue-900 px-3 py-1.5 rounded-full border border-blue-300 font-bold flex items-center';
-      }
-
-      // Check if user has a previously saved path in local storage
       const savedPath = localStorage.getItem(STORAGE_KEY);
       if (savedPath && savedPath.trim() !== '') {
         actualPath = savedPath.trim();
-      } else {
-        // Fallback default path based on detected OS
-        actualPath = isMac
-          ? '/Users/dendyaditya/Documents/HolistorW/WHDatos/Empresa01'
-          : 'C:\\HolistorW\\WHDatos\\Empresa01';
+        document.getElementById('rutaExpoWinInput').value = actualPath;
       }
-
-      // Auto-fill the READ-ONLY input field on screen load
-      const inputEl = document.getElementById('rutaExpoWinInput');
-      inputEl.value = actualPath;
-      updateCanonicalBadge();
-    }
-
-    function setPathPreset(osType) {
-      if (osType === 'mac') {
-        isMac = true;
-        actualPath = '/Users/dendyaditya/Documents/HolistorW/WHDatos/Empresa01';
-      } else {
-        isMac = false;
-        actualPath = 'C:\\HolistorW\\WHDatos\\Empresa01';
-      }
-      localStorage.setItem(STORAGE_KEY, actualPath);
-      document.getElementById('rutaExpoWinInput').value = actualPath;
-      updateCanonicalBadge();
     }
 
     // DIRECT NATIVE OS FOLDER PICKER VIA W3C FILE SYSTEM ACCESS API
@@ -303,26 +243,23 @@
         try {
           // Open Native OS Folder Picker Dialog
           selectedDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-          const folderName = selectedDirectoryHandle.name || 'Empresa01';
           
-          // Reconstruct OS-Aware Canonical Actual Path
-          actualPath = isMac 
-            ? `/Users/dendyaditya/Documents/HolistorW/WHDatos/${folderName}`
-            : `C:\\HolistorW\\WHDatos\\${folderName}`;
+          // PURE REAL PATH: Take EXACTLY the handle name of the folder clicked by user!
+          const folderName = selectedDirectoryHandle.name;
+          actualPath = folderName;
 
           // Save selected path persistently to local storage & update read-only input
           localStorage.setItem(STORAGE_KEY, actualPath);
           document.getElementById('rutaExpoWinInput').value = actualPath;
-          updateCanonicalBadge();
 
-          showStatus(`✅ Carpeta seleccionada: <strong>${folderName}</strong> (Ruta Actual Asignada: <code>${actualPath}</code>)`, true);
+          showStatus(`✅ Carpeta seleccionada: <strong>${actualPath}</strong>`, true);
         } catch (err) {
           if (err.name !== 'AbortError') {
             showStatus(`⚠️ Error al seleccionar carpeta: ${err.message}`, false);
           }
         }
       } else {
-        showStatus('ℹ️ Su navegador actual no soporta selección directa de carpetas. Se usará la ruta guardada por defecto.', false);
+        showStatus('ℹ️ Su navegador actual no soporta selección directa de carpetas.', false);
       }
     }
 
@@ -390,7 +327,7 @@
       URL.revokeObjectURL(url);
     }
 
-    // MAIN EXPORT HANDLER - SOLUCIÓN 1 ACTUAL PATH (DIRECT PHYSICAL WRITE ON DISK)
+    // MAIN EXPORT HANDLER - SOLUCIÓN 1 PURE REAL PATH (DIRECT PHYSICAL WRITE ON DISK)
     async function handleExportar() {
       if (!validatePeriodo()) return;
 
@@ -419,7 +356,7 @@
           showStatus(
             `🎉 <strong>¡Exportación completada exitosamente!</strong><br>` +
             `Los 4 archivos de exportación (IVREGESP.TXT, IVOTRDGI.TXT, MOVIVAC.TXT, IVDETPER.TXT) se escribieron físicamente de forma directa en:<br>` +
-            `<code class="font-bold text-purple-900 font-mono">${targetPath}</code>`,
+            `<code class="font-bold text-teal-900 font-mono">${targetPath}</code>`,
             true
           );
           return;
