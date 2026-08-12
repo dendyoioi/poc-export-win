@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exportar a Holistor Win - Producción Dinámica (Zero Install Pure Absolute Path)</title>
+  <title>Exportar a Holistor Win - Zero Hardcode Pure Resolver</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- JSZip CDN for ZIP bundling fallback -->
@@ -17,6 +17,7 @@
     .btn-green:hover { background-color: #25B34F; }
     .btn-teal { background-color: #008080; }
     .btn-teal:hover { background-color: #006666; }
+    .drag-active { border-color: #008080 !important; background-color: #F0FDFA !important; }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-800">
@@ -70,7 +71,7 @@
           Seleccionar ubicación
         </button>
         
-        <!-- Field Teks Ruta de Exportación: READ-ONLY (Dinamis tanpa hardcode) -->
+        <!-- Field Teks Ruta de Exportación: READ-ONLY (Tanpa hardcode apa pun) -->
         <input type="text" 
                id="rutaExpoWinInput" 
                readonly
@@ -138,7 +139,7 @@
 
   </main>
 
-  <!-- Modal Configurador de Ruta Física Dinámica (Pop-up Konfirmasi Parent Path) -->
+  <!-- Modal Zero-Hardcode Path Resolver -->
   <div id="modalConfigRuta" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
     <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 border border-gray-200 m-4">
       <div class="flex items-center justify-between border-b pb-3 mb-4">
@@ -147,22 +148,40 @@
       </div>
 
       <div class="space-y-4 text-xs">
-        <div class="bg-teal-50 p-3 rounded-lg border border-teal-200 text-teal-900">
-          📁 Carpeta seleccionada en el navegador: <strong id="modalFolderSelectedName" class="font-mono text-teal-950 font-bold">...</strong>
+        
+        <!-- Folder Handle Banner (Murni Nama Carpeta) -->
+        <div class="bg-teal-50 p-3 rounded-lg border border-teal-200 text-teal-900 flex items-center justify-between">
+          <div>
+            📁 Carpeta seleccionada: <strong id="modalFolderSelectedName" class="font-mono text-teal-950 font-bold">...</strong>
+          </div>
+          <span class="text-[11px] bg-teal-200/60 text-teal-900 font-semibold px-2 py-0.5 rounded">W3C Direct Access</span>
         </div>
 
+        <!-- Smart Clipboard Auto-Paste Input -->
         <div>
-          <label class="block font-bold text-gray-700 mb-1">
-            Ruta física absoluta de la carpeta en la computadora (Vía Holistor Win):
-          </label>
+          <div class="flex items-center justify-between mb-1">
+            <label class="font-bold text-gray-700">Ruta física absoluta asignada:</label>
+            <button onclick="readClipboardPath()" title="Pegar desde Clipboard (Ctrl+V)" class="text-teal-700 hover:text-teal-900 font-semibold flex items-center">
+              📋 Pegar Path de Clipboard
+            </button>
+          </div>
+          
           <input type="text" 
                  id="modalPathInput" 
                  class="w-full h-10 px-3 rounded-lg border border-gray-300 font-mono text-xs text-gray-900 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-                 placeholder="Ej. C:\HolistorW\WHDatos\Empresa01 o D:\MisDatos\Holistor\Empresa01">
-          <p class="text-[11px] text-gray-500 mt-1">
-            Puede ajustar libremente la letra de unidad (C:\, D:\) o la estructura de subcarpetas según su instalación.
-          </p>
+                 placeholder="Ingrese la ruta física absoluta de la carpeta (sin valores fijos)...">
         </div>
+
+        <!-- HTML5 Drag & Drop Target Box -->
+        <div id="dropZone" 
+             ondragover="handleDragOver(event)" 
+             ondragleave="handleDragLeave(event)" 
+             ondrop="handleDropFolder(event)"
+             class="border-2 border-dashed border-gray-300 rounded-lg p-3 text-center bg-gray-50 text-gray-500 transition-all cursor-pointer">
+          <p class="font-medium text-gray-700">📦 Drag & Drop folder di sini para auto-detectar ruta</p>
+          <p class="text-[10px] text-gray-400 mt-0.5">O copie la ruta desde la barra de File Explorer (Ctrl+C) y haga clic en Pegar Path</p>
+        </div>
+
       </div>
 
       <div class="mt-6 flex justify-end space-x-3">
@@ -251,7 +270,7 @@
   <script>
     let selectedDirectoryHandle = null;
     let actualPath = '';
-    let isMac = false;
+    let currentFolderName = '';
 
     function showStatus(message, isSuccess = true) {
       const alertEl = document.getElementById('statusAlert');
@@ -262,32 +281,23 @@
       alertEl.classList.remove('hidden');
     }
 
-    // ON SCREEN LOAD: FRESH BLANK STATE EVERY REFRESH (NO LOCALSTORAGE PERSISTENCE FOR TESTING)
+    // ON SCREEN LOAD: FRESH BLANK STATE EVERY REFRESH (ZERO HARDCODE)
     function loadScreenInitialPath() {
-      const ua = navigator.userAgent.toLowerCase();
-      const platform = navigator.platform.toLowerCase();
-      isMac = (platform.includes('mac') || ua.includes('mac') || ua.includes('os x'));
-
       actualPath = '';
       document.getElementById('rutaExpoWinInput').value = '';
     }
 
-    // DIRECT NATIVE OS FOLDER PICKER VIA W3C FILE SYSTEM ACCESS API + DYNAMIC PATH MODAL
+    // DIRECT NATIVE OS FOLDER PICKER VIA W3C FILE SYSTEM ACCESS API
     async function handleSeleccionarUbicacion() {
       if ('showDirectoryPicker' in window) {
         try {
           // Open Native OS Folder Picker Dialog
           selectedDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-          const folderName = selectedDirectoryHandle.name;
-          
-          // Reconstruct Proposed Dynamic Absolute Path
-          let proposedPath = isMac 
-            ? `/Users/dendyaditya/${folderName}`
-            : `C:\\HolistorW\\WHDatos\\${folderName}`;
+          currentFolderName = selectedDirectoryHandle.name;
 
-          // Show Dynamic Path Configurator Modal
-          document.getElementById('modalFolderSelectedName').textContent = folderName;
-          document.getElementById('modalPathInput').value = proposedPath;
+          // ZERO HARDCODE: Show folder name purely in modal
+          document.getElementById('modalFolderSelectedName').textContent = currentFolderName;
+          document.getElementById('modalPathInput').value = currentFolderName;
           document.getElementById('modalConfigRuta').classList.remove('hidden');
         } catch (err) {
           if (err.name !== 'AbortError') {
@@ -299,6 +309,51 @@
       }
     }
 
+    // Clipboard Auto-Paste
+    async function readClipboardPath() {
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          const text = await navigator.clipboard.readText();
+          if (text && text.trim() !== '') {
+            document.getElementById('modalPathInput').value = text.trim();
+          }
+        }
+      } catch (err) {
+        alert('Por favor presione Ctrl+V dentro del campo para pegar la ruta copiada.');
+      }
+    }
+
+    // HTML5 Drag and Drop Target Box
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.add('drag-active');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.remove('drag-active');
+    }
+
+    function handleDropFolder(e) {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.remove('drag-active');
+
+      const items = e.dataTransfer.items;
+      if (items && items.length > 0) {
+        const item = items[0];
+        if (item.kind === 'file') {
+          const entry = item.webkitGetAsEntry ? item.webkitGetAsEntry() : null;
+          if (entry) {
+            const folder = entry.name;
+            currentFolderName = folder;
+            const fullPath = entry.fullPath || folder;
+            document.getElementById('modalPathInput').value = fullPath;
+            document.getElementById('modalFolderSelectedName').textContent = folder;
+          }
+        }
+      }
+    }
+
     function saveConfigRuta() {
       const inputVal = document.getElementById('modalPathInput').value.trim();
       if (!inputVal) return;
@@ -306,7 +361,7 @@
       actualPath = inputVal;
       document.getElementById('rutaExpoWinInput').value = actualPath;
       closeConfigRutaModal();
-      showStatus(`✅ Ruta física de exportación configurada dinámicamente: <code>${actualPath}</code>`, true);
+      showStatus(`✅ Ruta física de exportación asignada: <code>${actualPath}</code>`, true);
     }
 
     function closeConfigRutaModal() {
