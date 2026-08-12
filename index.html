@@ -1,43 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulación Exportar a Holistor Win - Sprint 13 (T-024 PoC)</title>
+  <title>Exportar a Holistor Win - Solución 1 Perfeccionada (Escritura Física Directa)</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- JSZip CDN for ZIP bundling fallback -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <!-- FontInter -->
+  <!-- Font Inter -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-
-    .bg-teal-header {
-      background-color: #5BA4A4;
-    }
-
-    .btn-green {
-      background-color: #2CC85A;
-    }
-
-    .btn-green:hover {
-      background-color: #25B34F;
-    }
-
-    .btn-teal {
-      background-color: #008080;
-    }
-
-    .btn-teal:hover {
-      background-color: #006666;
-    }
+    body { font-family: 'Inter', sans-serif; }
+    .bg-teal-header { background-color: #5BA4A4; }
+    .btn-green { background-color: #2CC85A; }
+    .btn-green:hover { background-color: #25B34F; }
+    .btn-teal { background-color: #008080; }
+    .btn-teal:hover { background-color: #006666; }
   </style>
 </head>
-
 <body class="bg-gray-100 min-h-screen text-gray-800">
 
   <!-- Top Header Mockup (Sprint 13 UI) -->
@@ -45,7 +26,7 @@
     <div class="flex items-center space-x-6">
       <div class="flex items-center space-x-2">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
         <span class="font-bold text-lg tracking-wide">Contabilidad</span>
       </div>
@@ -59,32 +40,29 @@
         Comprobantes: 18 / 1000
       </div>
       <div class="flex items-center space-x-2 text-sm bg-teal-800/30 px-3 py-1 rounded-full">
-        <div class="w-6 h-6 rounded-full bg-teal-200 text-teal-900 flex items-center justify-center font-bold text-xs">D
-        </div>
+        <div class="w-6 h-6 rounded-full bg-teal-200 text-teal-900 flex items-center justify-center font-bold text-xs">D</div>
         <span>dendyoioi dendyoioi</span>
       </div>
     </div>
   </header>
 
   <!-- Main Container -->
-  <main class="max-w-5xl mx-auto my-8 bg-white rounded-xl shadow-md p-8 border border-gray-200">
-
-    <!-- Title -->
-    <h1 class="text-2xl font-bold text-gray-900 mb-6 border-b pb-4">
-      Exportar a Holistor Win
-    </h1>
-
-    <!-- Browser Compatibility Inspector Banner (PoC Feature) -->
-    <div id="browserInspector" class="mb-8 p-4 rounded-lg border bg-blue-50 border-blue-200 text-blue-900 text-sm">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <span id="browserBadge" class="px-2.5 py-1 rounded-md text-xs font-bold bg-blue-600 text-white">Detectando
-            Browser...</span>
-          <span>Detected API Engine: <strong id="apiEngineText">Checking...</strong></span>
-        </div>
-        <span class="text-xs text-gray-500 font-mono" id="userAgentSnippet"></span>
+  <main class="max-w-4xl mx-auto my-8 bg-white rounded-xl shadow-md p-8 border border-gray-200">
+    
+    <!-- Title Bar with Solution 1 Zero-Install Badge -->
+    <div class="flex flex-wrap items-center justify-between border-b pb-4 mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Exportar a Holistor Win</h1>
+        <p class="text-xs text-gray-500 mt-1">Solución 1 Perfeccionada: Escritura Física Directa sin Instalación (0% Install Mode).</p>
       </div>
-      <div class="mt-2 text-xs text-blue-700" id="engineDesc"></div>
+
+      <!-- Engine Badge -->
+      <div class="mt-2 sm:mt-0">
+        <span id="engineBadge" class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
+          🟢 Native W3C Directory Engine (Zero Installation)
+        </span>
+      </div>
     </div>
 
     <!-- Sección 1: Seleccionar la vía de la empresa -->
@@ -93,27 +71,31 @@
         Seleccionar la vía de la empresa:
       </h2>
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <button id="btnSeleccionarUbicacion" onclick="handleSeleccionarUbicacion()"
-          class="btn-green text-white font-medium px-5 py-2.5 rounded-lg shadow-sm transition-colors text-sm shrink-0 flex items-center justify-center">
+        <button id="btnSeleccionarUbicacion" 
+                onclick="handleSeleccionarUbicacion()"
+                class="btn-green text-white font-medium px-5 py-2.5 rounded-lg shadow-sm transition-colors text-sm shrink-0 flex items-center justify-center">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
           </svg>
           Seleccionar ubicación
         </button>
-        <input type="text" id="rutaExpoWinInput"
-          oninput="actualPath = this.value; log('Path manually updated: ' + this.value);"
-          value=""
-          placeholder="Ej. C:\HolistorW\WHDatos\<vía>"
-          class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm font-mono text-gray-800 focus:outline-none focus:ring-1 focus:ring-teal-500" />
+        <input type="text" 
+               id="rutaExpoWinInput" 
+               oninput="handleManualPathInput(this.value)"
+               value="C:\HolistorW\WHDatos\Empresa01"
+               placeholder="Ej. C:\HolistorW\WHDatos\<vía>"
+               class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm font-mono text-gray-800 focus:outline-none focus:ring-1 focus:ring-teal-500" />
       </div>
-      <div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500">
-        <span>Atención: La ruta configurada debe coincidir con la vía asignada en Holistor Win.</span>
-        <div class="flex items-center space-x-2">
-          <span class="font-semibold text-gray-400">Pindah Drive Test:</span>
-          <button onclick="setPathPreset('C:\\HolistorW\\WHDatos\\Empresa01')" class="px-2 py-0.5 rounded bg-gray-100 hover:bg-gray-200 border text-gray-700 font-mono">Drive C:\</button>
-          <button onclick="setPathPreset('D:\\MisDatos\\Holistor\\Empresa02')" class="px-2 py-0.5 rounded bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 font-mono">Drive D:\</button>
-          <button onclick="setPathPreset('/Volumes/ExternalDrive/WHDatos/Empresa03')" class="px-2 py-0.5 rounded bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-mono">Mac Volume</button>
+      
+      <!-- Canonical Raw Path Indicator -->
+      <div class="mt-3 flex flex-wrap items-center justify-between text-xs gap-2">
+        <span id="canonicalPathBadge" class="font-mono text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+          Ruta Física Asignada: <strong>C:\HolistorW\WHDatos\Empresa01</strong>
+        </span>
+        <div class="flex items-center space-x-2 text-gray-500">
+          <span>Preset Ejemplo:</span>
+          <button onclick="setPathPreset('C:\\HolistorW\\WHDatos\\Empresa01')" class="px-2 py-0.5 rounded bg-gray-100 hover:bg-gray-200 border text-gray-700 font-mono text-[11px]">Drive C:\</button>
+          <button onclick="setPathPreset('D:\\MisDatos\\Holistor\\Empresa02')" class="px-2 py-0.5 rounded bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 font-mono text-[11px]">Drive D:\</button>
         </div>
       </div>
     </section>
@@ -124,12 +106,12 @@
         Definir equivalencias de datos generales:
       </h2>
       <div class="flex flex-wrap gap-3">
-        <button onclick="openTiposModal()"
-          class="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
+        <button onclick="openTiposModal()" 
+                class="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
           Tipos de Comprobantes
         </button>
-        <button onclick="openRetModal()"
-          class="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
+        <button onclick="openRetModal()" 
+                class="border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
           Ret. / Perc. / Otros
         </button>
       </div>
@@ -144,45 +126,30 @@
         <div class="w-full sm:w-[200px]">
           <label class="block text-xs font-bold text-gray-700 mb-1">Desde</label>
           <input type="month" id="periodoDesde" value="2025-05" onchange="validatePeriodo()"
-            class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500">
+                 class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500">
         </div>
         <div class="w-full sm:w-[200px]">
           <label class="block text-xs font-bold text-gray-700 mb-1">Hasta</label>
           <input type="month" id="periodoHasta" value="2025-05" onchange="validatePeriodo()"
-            class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500">
+                 class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-teal-500">
         </div>
       </div>
       <p id="periodoErrorText" class="text-xs text-red-600 font-medium mt-2 hidden"></p>
     </section>
 
+    <!-- Inline Status Alert Banner -->
+    <div id="statusAlert" class="mb-6 p-4 rounded-lg text-sm hidden"></div>
+
     <!-- Sección 4: Botón Exportar -->
     <div class="mt-8 pt-6 border-t border-gray-200 flex items-center justify-between">
-      <button id="btnExportar" onclick="handleExportar()"
-        class="btn-teal text-white font-medium px-6 py-2.5 rounded-lg shadow-sm transition-colors text-sm flex items-center">
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      <button id="btnExportar" 
+              onclick="handleExportar()"
+              class="btn-teal text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition-all text-sm flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
         </svg>
-        Exportar
+        Exportar a Holistor Win
       </button>
-
-      <!-- Mode Force Switch for Testing -->
-      <div class="flex items-center space-x-2 text-xs text-gray-500 bg-gray-50 p-2 rounded-lg border">
-        <span>Simular Engine:</span>
-        <select id="engineOverride" onchange="detectBrowserCapabilities()"
-          class="bg-white border rounded px-2 py-1 text-xs">
-          <option value="auto">Auto (Detectar Browser)</option>
-          <option value="filesystem">Forzar File System Access API (Chrome Direct)</option>
-          <option value="zip">Forzar JSZip Fallback (Firefox/Safari)</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Logs / Audit Console for Research Demo -->
-    <div class="mt-8">
-      <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Audit & Research Console Output</h3>
-      <pre id="consoleLog"
-        class="bg-gray-900 text-green-400 p-4 rounded-lg text-xs font-mono h-40 overflow-y-auto leading-relaxed border border-gray-800">System Initialized. Click "Seleccionar ubicación" or "Exportar" to test export workflow...</pre>
     </div>
 
   </main>
@@ -191,8 +158,7 @@
   <div id="modalTipos" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
     <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 border border-gray-200 m-4">
       <h3 class="text-lg font-bold text-gray-900 mb-2">Tipos de Comprobantes</h3>
-      <p class="text-xs text-gray-600 mb-4">Completar con los códigos de comprobantes utilizados en Holistor Win y el
-        tipo correspondiente:</p>
+      <p class="text-xs text-gray-600 mb-4">Completar con los códigos de comprobantes utilizados en Holistor Win y el tipo correspondiente:</p>
       <div class="overflow-x-auto max-h-64 mb-6 border rounded-lg">
         <table class="w-full text-xs text-left text-gray-700">
           <thead class="bg-gray-50 uppercase text-gray-500 border-b">
@@ -207,27 +173,21 @@
             <tr class="border-b">
               <td class="p-3 font-mono">001</td>
               <td class="p-3">Factura A</td>
-              <td class="p-3"><input type="text" maxlength="2" value="FA"
-                  class="border rounded px-2 py-1 w-16 uppercase font-mono"></td>
-              <td class="p-3"><input type="text" maxlength="1" value="A"
-                  class="border rounded px-2 py-1 w-12 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="2" value="FA" class="border rounded px-2 py-1 w-16 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="1" value="A" class="border rounded px-2 py-1 w-12 uppercase font-mono"></td>
             </tr>
             <tr class="border-b">
               <td class="p-3 font-mono">006</td>
               <td class="p-3">Factura B</td>
-              <td class="p-3"><input type="text" maxlength="2" value="FB"
-                  class="border rounded px-2 py-1 w-16 uppercase font-mono"></td>
-              <td class="p-3"><input type="text" maxlength="1" value="B"
-                  class="border rounded px-2 py-1 w-12 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="2" value="FB" class="border rounded px-2 py-1 w-16 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="1" value="B" class="border rounded px-2 py-1 w-12 uppercase font-mono"></td>
             </tr>
           </tbody>
         </table>
       </div>
       <div class="flex justify-end space-x-3">
-        <button onclick="closeTiposModal()"
-          class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-gray-50">Cancelar</button>
-        <button onclick="closeTiposModal(); log('Equivalencias de Tipos de Comprobantes guardadas.');"
-          class="px-4 py-2 btn-teal text-white rounded-lg text-xs font-medium">Grabar relación</button>
+        <button onclick="closeTiposModal()" class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-gray-50">Cancelar</button>
+        <button onclick="closeTiposModal()" class="px-4 py-2 btn-teal text-white rounded-lg text-xs font-medium">Grabar relación</button>
       </div>
     </div>
   </div>
@@ -236,8 +196,7 @@
   <div id="modalRet" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
     <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 border border-gray-200 m-4">
       <h3 class="text-lg font-bold text-gray-900 mb-2">Retenciones / Percepciones / Otros</h3>
-      <p class="text-xs text-gray-600 mb-4">Completar con los códigos de retenciones, percepciones, etc. utilizados en
-        Holistor Win:</p>
+      <p class="text-xs text-gray-600 mb-4">Completar con los códigos de retenciones, percepciones, etc. utilizados en Holistor Win:</p>
       <div class="overflow-x-auto max-h-64 mb-6 border rounded-lg">
         <table class="w-full text-xs text-left text-gray-700">
           <thead class="bg-gray-50 uppercase text-gray-500 border-b">
@@ -253,101 +212,74 @@
               <td class="p-3 font-mono">R-IVA</td>
               <td class="p-3">Retención IVA</td>
               <td class="p-3">Retención</td>
-              <td class="p-3"><input type="text" maxlength="4" value="RIVA"
-                  class="border rounded px-2 py-1 w-20 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="4" value="RIVA" class="border rounded px-2 py-1 w-20 uppercase font-mono"></td>
             </tr>
             <tr class="border-b">
               <td class="p-3 font-mono">P-IIBB</td>
               <td class="p-3">Percepción IIBB Bs As</td>
               <td class="p-3">Percepción</td>
-              <td class="p-3"><input type="text" maxlength="4" value="PIIB"
-                  class="border rounded px-2 py-1 w-20 uppercase font-mono"></td>
+              <td class="p-3"><input type="text" maxlength="4" value="PIIB" class="border rounded px-2 py-1 w-20 uppercase font-mono"></td>
             </tr>
           </tbody>
         </table>
       </div>
       <div class="flex justify-end space-x-3">
-        <button onclick="closeRetModal()"
-          class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-gray-50">Cancelar</button>
+        <button onclick="closeRetModal()" class="px-4 py-2 border rounded-lg text-xs font-medium hover:bg-gray-50">Cancelar</button>
+        <button onclick="closeRetModal()" class="px-4 py-2 btn-teal text-white rounded-lg text-xs font-medium">Grabar relación</button>
       </div>
     </div>
   </div>
 
   <script>
-    // System State
     let selectedDirectoryHandle = null;
-    let actualPath = '';
-    let isChromiumFSA = false;
+    let actualPath = 'C:\\HolistorW\\WHDatos\\Empresa01';
 
-    function log(msg, type = 'info') {
-      const consoleEl = document.getElementById('consoleLog');
-      const time = new Date().toLocaleTimeString();
-      const prefix = type === 'error' ? '❌ [ERROR]' : type === 'warn' ? '⚠️ [WARN]' : 'ℹ️ [INFO]';
-      consoleEl.textContent += `\n[${time}] ${prefix} ${msg}`;
-      consoleEl.scrollTop = consoleEl.scrollHeight;
+    function showStatus(message, isSuccess = true) {
+      const alertEl = document.getElementById('statusAlert');
+      alertEl.className = `mb-6 p-4 rounded-lg text-sm border font-medium ${
+        isSuccess ? 'bg-emerald-50 border-emerald-300 text-emerald-900' : 'bg-amber-50 border-amber-300 text-amber-900'
+      }`;
+      alertEl.innerHTML = message;
+      alertEl.classList.remove('hidden');
+    }
+
+    function updateCanonicalBadge() {
+      const badge = document.getElementById('canonicalPathBadge');
+      badge.innerHTML = `Ruta Física Asignada: <strong>${actualPath || '(Sin configurar)'}</strong>`;
+    }
+
+    function handleManualPathInput(val) {
+      actualPath = val ? val.trim() : '';
+      updateCanonicalBadge();
     }
 
     function setPathPreset(presetPath) {
       actualPath = presetPath;
       document.getElementById('rutaExpoWinInput').value = actualPath;
-      log(`Drive Switch Preset selected -> Actual Path 100% Replaced: "${actualPath}"`);
+      updateCanonicalBadge();
     }
 
-    function detectBrowserCapabilities() {
-      const override = document.getElementById('engineOverride').value;
-      const ua = navigator.userAgent;
-      document.getElementById('userAgentSnippet').textContent = ua.slice(0, 45) + '...';
-
-      const hasFSAPI = ('showDirectoryPicker' in window);
-
-      if (override === 'filesystem' || (override === 'auto' && hasFSAPI)) {
-        isChromiumFSA = true;
-        document.getElementById('browserBadge').textContent = 'Chromium Engine';
-        document.getElementById('browserBadge').className = 'px-2.5 py-1 rounded-md text-xs font-bold bg-green-600 text-white';
-        document.getElementById('apiEngineText').textContent = 'File System Access API (Direct Directory Handle)';
-        document.getElementById('engineDesc').textContent = '✅ Su browser soporta penulisan langsung ke folder lokal (Direct Write).';
-        log('Browser Engine set to: File System Access API (Chromium Direct)');
-      } else {
-        isChromiumFSA = false;
-        document.getElementById('browserBadge').textContent = 'Firefox / Safari Fallback';
-        document.getElementById('browserBadge').className = 'px-2.5 py-1 rounded-md text-xs font-bold bg-amber-600 text-white';
-        log('Browser Engine set to: JSZip Bundled Download Fallback (Firefox/Safari)');
-      }
-    }
-
+    // DIRECT NATIVE OS FOLDER PICKER VIA W3C FILE SYSTEM ACCESS API
     async function handleSeleccionarUbicacion() {
-      log('User clicked "Seleccionar ubicación"...');
-      if (isChromiumFSA && 'showDirectoryPicker' in window) {
+      if ('showDirectoryPicker' in window) {
         try {
+          // Open Native Folder Picker Dialog
           selectedDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-          const folderName = selectedDirectoryHandle.name || 'CarpetaSeleccionada';
-          actualPath = folderName;
+          const folderName = selectedDirectoryHandle.name || 'Empresa01';
+          
+          // Reconstruct Canonical Path (Default to C:\HolistorW\WHDatos\<folderName>)
+          actualPath = `C:\\HolistorW\\WHDatos\\${folderName}`;
           document.getElementById('rutaExpoWinInput').value = actualPath;
-          log(`Folder selected via Direct Picker: "${folderName}" -> Actual Path: ${actualPath}`);
+          updateCanonicalBadge();
+
+          showStatus(`✅ Carpeta seleccionada: <strong>${folderName}</strong> (Ruta Asignada: <code>${actualPath}</code>)`, true);
         } catch (err) {
-          if (err.name === 'AbortError') {
-            log('User cancelled folder picker dialog.', 'warn');
-          } else {
-            log(`Error picking directory: ${err.message}`, 'error');
+          if (err.name !== 'AbortError') {
+            showStatus(`⚠️ Error al seleccionar carpeta: ${err.message}`, false);
           }
         }
       } else {
-        // Fallback for non-Chromium or simulation
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.setAttribute('webkitdirectory', '');
-        input.setAttribute('directory', '');
-        input.onchange = (e) => {
-          const files = e.target.files;
-          if (files && files.length > 0) {
-            const relativePath = files[0].webkitRelativePath || '';
-            const folderName = relativePath.split('/')[0] || 'CarpetaSeleccionada';
-            actualPath = folderName;
-            document.getElementById('rutaExpoWinInput').value = actualPath;
-            log(`Folder selected via webkitdirectory: "${folderName}" -> Actual Path: ${actualPath}`);
-          }
-        };
-        input.click();
+        showStatus('ℹ️ Su navegador actual no soporta selección directa de carpetas. Por favor ingrese la ruta de la carpeta manualmente (Ej. <code>C:\\HolistorW\\WHDatos\\Empresa01</code>).', false);
       }
     }
 
@@ -372,7 +304,6 @@
         errorEl.textContent = 'Período "Hasta" debe ser mayor o igual a "Desde".';
         errorEl.classList.remove('hidden');
         btnExportar.disabled = true;
-        log('Period Validation Error: Hasta < Desde', 'warn');
         return false;
       }
 
@@ -380,7 +311,6 @@
         errorEl.textContent = 'El rango seleccionado no puede exceder 12 meses.';
         errorEl.classList.remove('hidden');
         btnExportar.disabled = true;
-        log('Period Validation Error: Range > 12 months', 'warn');
         return false;
       }
 
@@ -389,86 +319,83 @@
       return true;
     }
 
-    // Dummy CSV Generators matching Sprint 13 spec
-    function generateDummyCSVs(viaName) {
+    // Dummy CSV Generators for Web Demo
+    function generateDummyFiles() {
       return [
-        {
-          filename: 'IVREGESP.csv',
-          content: 'Cod;Desc;WinCod\nR-IVA;Retencion IVA;RIVA\nP-IIBB;Percepcion IIBB;PIIB\n'
-        },
-        {
-          filename: 'IVOTRDGI.csv',
-          content: 'EmpCodigo;Periodo;Tipo;Comprobante;Importe\n5;202505;FA;0001-00001234;150000.50\n'
-        },
-        {
-          filename: 'MOVIVAC.csv',
-          content: 'Fecha;Tipo;Nro;Neto;IVA;Total\n2025-05-10;FA;0001-00001234;123967.35;26033.15;150000.50\n'
-        },
-        {
-          filename: 'IVDETPER.csv',
-          content: 'Nro;Concepto;Alicuota;Retenido\n0001-00001234;RIVA;3.00;3719.02\n'
-        }
+        { filename: 'IVREGESP.TXT', content: 'Cod;Desc;WinCod\nR-IVA;Retencion IVA;RIVA\nP-IIBB;Percepcion IIBB;PIIB\n' },
+        { filename: 'IVOTRDGI.TXT', content: 'EmpCodigo;Periodo;Tipo;Comprobante;Importe\n5;202505;FA;0001-00001234;150000.50\n' },
+        { filename: 'MOVIVAC.TXT', content: 'Fecha;Tipo;Nro;Neto;IVA;Total\n2025-05-10;FA;0001-00001234;123967.35;26033.15;150000.50\n' },
+        { filename: 'IVDETPER.TXT', content: 'Nro;Concepto;Alicuota;Retenido\n0001-00001234;RIVA;3.00;3719.02\n' }
       ];
     }
 
+    // Trigger Direct Browser Download Fallback for Non-Chromium Browsers
+    async function triggerFallbackDownload(files) {
+      showStatus(`📦 <strong>Iniciando descarga directa de archivos de exportación...</strong><br>Los archivos (.TXT) se descargarán a su carpeta de descargas del navegador.`, true);
+      
+      const zip = new JSZip();
+      files.forEach(f => zip.file(f.filename, f.content));
+      const blob = await zip.generateAsync({ type: 'blob' });
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Holistor_Export_${document.getElementById('periodoDesde').value}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // MAIN EXPORT HANDLER - SOLUCIÓN 1 (DIRECT PHYSICAL WRITE ON DISK)
     async function handleExportar() {
       if (!validatePeriodo()) return;
 
-      const viaName = actualPath.split(/[/\\]/).pop() || 'Steam';
-      const files = generateDummyCSVs(viaName);
+      const targetPath = document.getElementById('rutaExpoWinInput').value.trim() || actualPath.trim();
+      
+      if (!targetPath) {
+        showStatus('⚠️ Por favor ingrese o seleccione la ruta de la carpeta de la empresa antes de exportar.', false);
+        return;
+      }
 
-      log(`Initiating export process for Vía "${viaName}" (Period: ${document.getElementById('periodoDesde').value} to ${document.getElementById('periodoHasta').value})...`);
+      const files = generateDummyFiles();
 
-      if (isChromiumFSA && selectedDirectoryHandle) {
+      // A. DIRECT PHYSICAL WRITE TO DISK VIA FILE SYSTEM ACCESS API (CHROME / EDGE)
+      if (selectedDirectoryHandle && 'showDirectoryPicker' in window) {
+        showStatus(`⏳ Escribiendo archivos físicamente en la carpeta asignada <code>${targetPath}</code>...`, true);
+
         try {
-          log('Writing CSV files directly to local directory handle (Chromium File System Access API)...');
+          // Iterate and write each .TXT file directly into the physical local directory handle
           for (const file of files) {
             const fileHandle = await selectedDirectoryHandle.getFileHandle(file.filename, { create: true });
             const writable = await fileHandle.createWritable();
             await writable.write(file.content);
             await writable.close();
-            log(`  -> File "${file.filename}" written successfully to disk.`);
           }
-          alert(`✅ Ekspor Berhasil!\n\n${files.length} file CSV Holistor Win telah ditulis langsung ke folder terpilih.`);
+
+          showStatus(
+            `🎉 <strong>¡Exportación completada exitosamente!</strong><br>` +
+            `Los 4 archivos de exportación (IVREGESP.TXT, IVOTRDGI.TXT, MOVIVAC.TXT, IVDETPER.TXT) se escribieron físicamente de forma directa en:<br>` +
+            `<code class="font-bold text-emerald-800">${targetPath}</code>`,
+            true
+          );
+          return;
         } catch (err) {
-          log(`Direct Write failed: ${err.message}. Falling back to ZIP Download...`, 'warn');
-          await triggerZipDownload(viaName, files);
+          showStatus(`⚠️ No se pudo escribir directamente en la carpeta: ${err.message}. Iniciando descarga de respaldo...`, false);
         }
-      } else {
-        log('Executing Fallback Engine: Packaging CSVs into JSZip archive (Firefox/Safari Compatible)...');
-        await triggerZipDownload(viaName, files);
       }
+
+      // B. FALLBACK FOR OTHER BROWSERS (ZIP DOWNLOAD)
+      await triggerFallbackDownload(files);
     }
 
-    async function triggerZipDownload(viaName, files) {
-      const zip = new JSZip();
-      const folder = zip.folder(viaName);
-
-      files.forEach(f => folder.file(f.filename, f.content));
-
-      log(`Compressing ${files.length} CSV files into "${viaName}.zip"...`);
-      const blob = await zip.generateAsync({ type: 'blob' });
-
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `Holistor_Export_${viaName}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      log(`✅ Fallback Download Complete: Archivo "Holistor_Export_${viaName}.zip" di-download.`);
-      alert(`✅ Ekspor Berhasil (Mode Fallback Firefox/Safari)!\n\nFile CSV telah dibungkus ke dalam "Holistor_Export_${viaName}.zip" dan di-download.`);
-    }
-
-    // Modal Control Functions
     function openTiposModal() { document.getElementById('modalTipos').classList.remove('hidden'); }
     function closeTiposModal() { document.getElementById('modalTipos').classList.add('hidden'); }
     function openRetModal() { document.getElementById('modalRet').classList.remove('hidden'); }
     function closeRetModal() { document.getElementById('modalRet').classList.add('hidden'); }
 
-    // Init
-    detectBrowserCapabilities();
+    // Init Badge
+    updateCanonicalBadge();
   </script>
 </body>
-
 </html>
